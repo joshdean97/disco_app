@@ -1,0 +1,160 @@
+<!-- filepath: /home/josh/Desktop/disco_app/templates/authentication/register.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="register-container">
+    <h1>Create Account</h1>
+    
+    <form method="post" class="register-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="user_type">Account Type:</label>
+            <select name="user_type" id="user_type" required onchange="toggleFormType(this.value)">
+                <option value="">Select account type</option>
+                <option value="staff" {% if user_type == 'staff' %}selected{% endif %}>Staff Member</option>
+                <option value="operator" {% if user_type == 'operator' %}selected{% endif %}>Operator</option>
+            </select>
+        </div>
+
+        <div id="staff-form" class="form-section" style="display:none;">
+            <h2>Staff Registration</h2>
+            {{ staff_form.as_p }}
+        </div>
+
+        <div id="operator-form" class="form-section" style="display:none;">
+            <h2>Operator Registration</h2>
+            {{ operator_form.as_p }}
+        </div>
+
+        <button type="submit" class="btn-primary">Register</button>
+    </form>
+
+    <p>Already have an account? <a href="/login">Login here</a></p>
+</div>
+
+<style>
+    .register-container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 32px 28px;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 18px 40px rgba(2, 22, 38, 0.08);
+    }
+
+    .register-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        margin: 20px 0;
+    }
+
+    .form-group,
+    .form-section p {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label,
+    .form-section label {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .form-group select,
+    .form-section input,
+    .form-section textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #d2d6dc;
+        border-radius: 10px;
+        font-size: 14px;
+        background: #fafbff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .form-group select:focus,
+    .form-section input:focus,
+    .form-section textarea:focus {
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+        outline: none;
+    }
+
+    .form-section {
+        border-top: 1px solid #e5e7eb;
+        padding-top: 18px;
+    }
+
+    .form-section h2 {
+        margin-bottom: 14px;
+        font-size: 1.1rem;
+    }
+
+    .form-section .helptext {
+        display: none;
+        margin-top: 6px;
+        color: #6b7280;
+        font-size: 0.92rem;
+        line-height: 1.5;
+    }
+
+    .form-section input:focus + .helptext,
+    .form-section textarea:focus + .helptext,
+    .form-section select:focus + .helptext {
+        display: block;
+    }
+
+    .form-section .helptext ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+    .form-section .errorlist,
+    .register-form .errorlist {
+        margin: 6px 0 0;
+        padding-left: 18px;
+        color: #dc2626;
+        font-size: 0.93rem;
+    }
+
+    .form-section .errorlist li,
+    .register-form .errorlist li {
+        margin: 2px 0;
+        list-style: disc;
+    }
+
+    .btn-primary {
+        background-color: #00d4ff;
+        color: #000;
+        padding: 14px 16px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+    }
+
+    .btn-primary:hover {
+        background-color: #00b8d4;
+    }
+</style>
+
+<script>
+    function toggleFormType(value) {
+        document.getElementById('staff-form').style.display = value === 'staff' ? 'block' : 'none';
+        document.getElementById('operator-form').style.display = value === 'operator' ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var initialType = "{{ user_type|default:'' }}";
+        if (initialType) {
+            toggleFormType(initialType);
+        }
+    });
+</script>
+{% endblock %}
