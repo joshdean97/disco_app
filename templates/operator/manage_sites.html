@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Manage Your Venues</h2>
+    <hr>
+    <h4>Add a New Venue</h4>
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Add Venue</button>
+    </form>
+    <h4>Your Venues</h4>
+    {% if sites %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for site in sites %}
+                <tr>
+                    <td>{{ site.name }}</td>
+                    <td>{{ site.address }}</td>
+                    <td>{{ site.city }}</td>
+                    <td>
+                        <form method="post" action="?delete={{ site.id }}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this venue?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have not added any venues yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

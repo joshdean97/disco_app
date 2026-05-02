@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h1>Staff Dashboard</h1>
+  <p>Welcome, {{ staff.user.username }}!</p>
+  <h2>Pending Applications</h2>
+  <ul>
+    {% for req in pending_requests %}
+      <li>{{ req.shift }} (applied {{ req.applied_at|date:'SHORT_DATETIME_FORMAT' }})</li>
+    {% empty %}
+      <li>No pending applications.</li>
+    {% endfor %}
+  </ul>
+  <h2>Accepted Shifts</h2>
+  <ul>
+    {% for req in accepted_requests %}
+      <li>{{ req.shift }} (accepted)</li>
+    {% empty %}
+      <li>No accepted shifts.</li>
+    {% endfor %}
+  </ul>
+  <a href="/shifts/" class="btn-primary">Browse Shifts</a>
+</div>
+{% endblock %}

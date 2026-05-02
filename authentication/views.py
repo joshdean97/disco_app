@@ -1,11 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from .models import Staff, Operator
-from .forms import StaffRegistrationForm, OperatorRegistrationForm
+from django.contrib.auth.decorators import login_required
+from .models import Staff, Operator, Availability
+from .forms import StaffRegistrationForm, OperatorRegistrationForm, AvailabilityForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
-# Create your views here.
-# create staff and operator profiles when a user is created
+
 def register(request):
     staff_form = StaffRegistrationForm()
     operator_form = OperatorRegistrationForm()
@@ -23,7 +23,6 @@ def register(request):
                     year_started=staff_form.cleaned_data.get("year_started"),
                     bio=staff_form.cleaned_data.get("bio"),
                     travel_radius_miles=staff_form.cleaned_data.get("travel_radius_miles"),
-                    is_available=staff_form.cleaned_data.get("is_available"),
                 )
                 return render(request, "authentication/register_success.html", {"user": user})
         elif user_type == "operator":
@@ -45,7 +44,45 @@ def register(request):
             "user_type": user_type,
         },
     )
+
+
+@login_required
+def manage_availability(request):
+    try:
+        staff = Staff.objects.get(user=request.user)
+    except Staff.DoesNotExist:
+        return redirect("register")
     
+    availabilities = staff.availability_slots.all()
+    form = AvailabilityForm()
+
+    if request.method == "POST":
+        form = AvailabilityForm(request.POST)
+        if form.is_valid():
+            availability = form.save(commit=False)
+            availability.staff = staff
+            availability.save()
+            return redirect("manage_availability")
+
+    return render(request, "authentication/manage_availability.html", {
+        "form": form,
+        "availabilities": availabilities,
+        "staff": staff,
+    })
+
+
+@login_required
+def delete_availability(request, availability_id):
+    try:
+        staff = Staff.objects.get(user=request.user)
+        availability = Availability.objects.get(id=availability_id, staff=staff)
+        availability.delete()
+    except (Staff.DoesNotExist, Availability.DoesNotExist):
+        pass
+    
+    return redirect("manage_availability")
+
+
 def login(request):
     if request.method == "POST":
         email = request.POST.get("email")
@@ -55,6 +92,7 @@ def login(request):
             auth_login(request, user)
             return render(request, "authentication/login_success.html")
     return render(request, "authentication/login.html")
+
 
 def logout(request):
     auth_logout(request)

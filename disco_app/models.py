@@ -38,7 +38,6 @@ class Shift(models.Model):
 
     STATUS_CHOICES = [
         ("open", "Open"),
-        ("requested", "Requested"),
         ("confirmed", "Confirmed"),
         ("completed", "Completed"),
         ("cancelled", "Cancelled"),
@@ -47,14 +46,6 @@ class Shift(models.Model):
     site = models.ForeignKey(
         "disco_app.Site",
         on_delete=models.CASCADE,
-        related_name="shifts",
-    )
-
-    worker = models.ForeignKey(
-        "authentication.Staff",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
         related_name="shifts",
     )
 
@@ -82,6 +73,47 @@ class Shift(models.Model):
     notes = models.TextField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ["-date", "-start_time"]
 
     def __str__(self):
         return f"{self.role_required} at {self.site.name} on {self.date}"
+
+
+class ShiftRequest(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("accepted", "Accepted"),
+        ("declined", "Declined"),
+        ("completed", "Completed"),
+        ("cancelled", "Cancelled"),
+    ]
+
+    shift = models.ForeignKey(
+        Shift,
+        on_delete=models.CASCADE,
+        related_name="applications",
+    )
+    
+    staff = models.ForeignKey(
+        "authentication.Staff",
+        on_delete=models.CASCADE,
+        related_name="shift_requests",
+    )
+    
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending",
+    )
+    
+    applied_at = models.DateTimeField(auto_now_add=True)
+    responded_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ["-applied_at"]
+        unique_together = ["shift", "staff"]
+    
+    def __str__(self):
+        return f"{self.staff.user.username} → {self.shift} ({self.status})"

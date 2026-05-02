@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/availability.css' %}">
+
+<div class="availability-container">
+    <h1>Manage Your Availability</h1>
+    
+    <div class="availability-content">
+        <div class="add-availability-section">
+            <h2>Add Time Slot</h2>
+            <form method="post" class="availability-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_day_of_week">Day of Week:</label>
+                    {{ form.day_of_week }}
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_start_time">Start Time:</label>
+                        {{ form.start_time }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_end_time">End Time:</label>
+                        {{ form.end_time }}
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Add Slot</button>
+            </form>
+        </div>
+
+        <div class="availability-list-section">
+            <h2>Your Availability</h2>
+            {% if availabilities %}
+                <div class="availability-grid">
+                    {% for slot in availabilities %}
+                        <div class="availability-slot">
+                            <div class="slot-header">
+                                <strong>{{ slot.get_day_of_week_display }}</strong>
+                                <a href="{% url 'delete_availability' slot.id %}" class="delete-btn" onclick="return confirm('Delete this slot?');">×</a>
+                            </div>
+                            <div class="slot-time">
+                                {{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-availability">No availability slots added yet. Add one above to get started!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

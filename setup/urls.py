@@ -1,27 +1,24 @@
-"""
-URL configuration for setup project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-
 from django.contrib import admin
 from django.urls import path
 from authentication import views as auth_views
+from disco_app import views as disco_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", disco_views.home, name="home"),
     path("register/", auth_views.register, name="register"),
     path("login/", auth_views.login, name="login"),
     path("logout/", auth_views.logout, name="logout"),
+    path("availability/", auth_views.manage_availability, name="manage_availability"),
+    path("availability/<int:availability_id>/delete/", auth_views.delete_availability, name="delete_availability"),
+    # Staff views
+    path("dashboard/", disco_views.staff_dashboard, name="staff_dashboard"),
+    path("shifts/", disco_views.browse_shifts, name="browse_shifts"),
+    path("shifts/<int:shift_id>/apply/", disco_views.apply_for_shift, name="apply_for_shift"),
+    # Operator views
+    path("operator/", disco_views.operator_dashboard, name="operator_dashboard"),
+    path("operator/shifts/post/", disco_views.post_shift, name="post_shift"),
+    path("operator/shifts/<int:shift_id>/requests/", disco_views.manage_shift_requests, name="manage_shift_requests"),
+    path("operator/requests/<int:request_id>/respond/", disco_views.respond_to_request, name="respond_to_request"),
+    path("operator/sites/", disco_views.manage_sites, name="manage_sites"),
 ]

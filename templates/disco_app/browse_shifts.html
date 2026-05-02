@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h1>Available Shifts</h1>
+  <form method="get" class="form-inline mb-3">
+    <label for="city" class="mr-2">Filter by City:</label>
+    <input type="text" name="city" id="city" value="{{ request.GET.city }}" class="form-control mr-2" placeholder="Enter city">
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </form>
+  <ul>
+    {% for item in shifts_with_status %}
+      <li>
+        <strong>{{ item.shift }}</strong>
+        {% if item.applied_status %}
+          <span style="color:green;">({{ item.applied_status|capfirst }})</span>
+        {% else %}
+          <form method="post" action="/shifts/{{ item.shift.id }}/apply/" style="display:inline;">{% csrf_token %}<button type="submit">Apply</button></form>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li>No shifts available.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

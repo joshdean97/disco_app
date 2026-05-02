@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h1>Requests for {{ shift }}</h1>
+  <ul>
+    {% for req in requests %}
+      <li>{{ req.staff.user.username }} <form method="post" action="/operator/requests/{{ req.id }}/respond/" style="display:inline;">{% csrf_token %}<button name="action" value="accept">Accept</button><button name="action" value="decline">Decline</button></form></li>
+    {% empty %}
+      <li>No requests.</li>
+    {% endfor %}
+  </ul>
+  <a href="/operator/">Back to dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h1>Operator Dashboard</h1>
+  <p>Welcome, {{ operator.user.username }}!</p>
+  <a href="/operator/shifts/post/" class="btn btn-primary">Post New Shift</a>
+  <a href="/operator/sites/" class="btn btn-secondary ml-2">Manage Venues</a>
+  <h2>Open Shifts</h2>
+  <ul>
+    {% for shift in open_shifts %}
+      <li>{{ shift }} <a href="/operator/shifts/{{ shift.id }}/requests/">View Requests</a></li>
+    {% empty %}
+      <li>No open shifts.</li>
+    {% endfor %}
+  </ul>
+  <h2>Pending Requests</h2>
+  <ul>
+    {% for req in pending_requests %}
+      <li>{{ req.shift }} — {{ req.staff.user.username }} <form method="post" action="/operator/requests/{{ req.id }}/respond/" style="display:inline;">{% csrf_token %}<button name="action" value="accept">Accept</button><button name="action" value="decline">Decline</button></form></li>
+    {% empty %}
+      <li>No pending requests.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
