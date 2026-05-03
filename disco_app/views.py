@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
@@ -6,6 +7,25 @@ from datetime import datetime, timedelta
 from .models import Site, Shift, ShiftRequest
 from authentication.models import Staff, Operator
 from .forms import ShiftForm, ShiftRequestForm, SiteForm
+from django.contrib import messages
+
+@login_required
+def edit_site(request, site_id):
+    """Operator can edit their venue (Site)."""
+    try:
+        operator = Operator.objects.get(user=request.user)
+    except Operator.DoesNotExist:
+        return redirect("register")
+    site = get_object_or_404(Site, id=site_id, operators=operator)
+    if request.method == "POST":
+        form = SiteForm(request.POST, instance=site)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Venue updated successfully.")
+            return redirect("manage_sites")
+    else:
+        form = SiteForm(instance=site)
+    return render(request, "operator/edit_site.html", {"form": form, "site": site})
 
 
 def home(request):
@@ -75,11 +95,26 @@ def browse_shifts(request):
     city = request.GET.get('city')
     if city:
         shifts = shifts.filter(site__city__iexact=city)
-    
-    # Filter by travel radius (simple, not geo)
-    if staff.travel_radius_miles:
-        # Only show shifts in same city for now (MVP, no geo)
-        shifts = shifts.filter(site__city__iexact=staff.user.staff.site_set.first().city) if staff.user.staff.site_set.exists() else shifts
+
+    # Geo-radius filtering
+    radius = staff.travel_radius_miles or 5
+    # Get staff's home location (first venue or prompt for coordinates in future)
+    staff_sites = staff.site_set.all()
+    staff_lat, staff_lon = None, None
+    if staff_sites.exists() and staff_sites.first().latitude and staff_sites.first().longitude:
+        staff_lat = staff_sites.first().latitude
+        staff_lon = staff_sites.first().longitude
+    # If staff has no venue, skip geo filtering (future: allow staff to set home location)
+    if staff_lat and staff_lon:
+        from geopy.distance import geodesic
+        filtered_shifts = []
+        for shift in shifts:
+            site = shift.site
+            if site.latitude and site.longitude:
+                dist = geodesic((staff_lat, staff_lon), (site.latitude, site.longitude)).miles
+                if dist <= radius:
+                    filtered_shifts.append(shift)
+        shifts = filtered_shifts
     
     # Get already applied shifts to show status
     applied_shift_ids = staff.shift_requests.values_list("shift_id", flat=True)
@@ -253,7 +288,21 @@ def manage_sites(request):
     if request.method == "POST":
         form = SiteForm(request.POST)
         if form.is_valid():
-            site = form.save()
+            site = form.save(commit=False)
+            # Geocode address
+            from geopy.geocoders import Nominatim
+            geolocator = Nominatim(user_agent="disco_app")
+            address_str = f"{site.address}, {site.city}, {site.postcode}"
+            try:
+                location = geolocator.geocode(address_str)
+                if location:
+                    site.latitude = location.latitude
+                    site.longitude = location.longitude
+            except Exception:
+                pass
+            site.save()
             site.operators.add(operator)
+            from django.contrib import messages
+            messages.success(request, "Venue added successfully.")
             return redirect("manage_sites")
     return render(request, "disco_app/manage_sites.html", {"sites": sites, "form": form, "operator": operator})

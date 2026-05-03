@@ -87,7 +87,12 @@ def login(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        user = authenticate(request, username=email, password=password)
+        from django.contrib.auth.models import User
+        try:
+            user_obj = User.objects.get(email=email)
+            user = authenticate(request, username=user_obj.username, password=password)
+        except User.DoesNotExist:
+            user = None
         if user is not None:
             auth_login(request, user)
             return render(request, "authentication/login_success.html")

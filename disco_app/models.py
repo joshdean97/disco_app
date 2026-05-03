@@ -10,6 +10,8 @@ class Site(models.Model):
     address = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
     postcode = models.CharField(max_length=20)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     venue_type = models.CharField(
         max_length=50,
         choices=[

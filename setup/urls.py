@@ -21,4 +21,5 @@ urlpatterns = [
     path("operator/shifts/<int:shift_id>/requests/", disco_views.manage_shift_requests, name="manage_shift_requests"),
     path("operator/requests/<int:request_id>/respond/", disco_views.respond_to_request, name="respond_to_request"),
     path("operator/sites/", disco_views.manage_sites, name="manage_sites"),
+    path("operator/sites/<int:site_id>/edit/", disco_views.edit_site, name="edit_site"),
 ]
