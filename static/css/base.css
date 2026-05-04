@@ -47,14 +47,5 @@ nav .nav-right {
 }
 
 main {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 20px;
-}
-
-.container {
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    min-height: calc(100vh - 60px);
 }
