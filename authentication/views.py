@@ -84,21 +84,32 @@ def delete_availability(request, availability_id):
 
 
 def login(request):
+    error_message = None
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        from django.contrib.auth.models import User
+        
+        print(f"Login attempt: email={email}, password={'*' * len(password) if password else 'None'}")
+        
         try:
             user_obj = User.objects.get(email=email)
+            print(f"User found: {user_obj.username}")
+            
             user = authenticate(request, username=user_obj.username, password=password)
+            print(f"Authenticate result: {user}")
+            
+            if user is not None:
+                auth_login(request, user)
+                print("Login successful")
+                return render(request, "authentication/login_success.html")
+            else:
+                error_message = "Invalid email or password."
+                print("Authentication failed - password incorrect")
         except User.DoesNotExist:
-            user = None
-        if user is not None:
-            auth_login(request, user)
-            return render(request, "authentication/login_success.html")
-    return render(request, "authentication/login.html")
-
-
+            error_message = "Invalid email or password."
+            print(f"User not found: {email}")
+    
+    return render(request, "authentication/login.html", {"error_message": error_message})
 def logout(request):
     auth_logout(request)
     return render(request, "authentication/logout_success.html")

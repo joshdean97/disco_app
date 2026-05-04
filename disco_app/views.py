@@ -98,12 +98,12 @@ def browse_shifts(request):
 
     # Geo-radius filtering
     radius = staff.travel_radius_miles or 5
-    # Get staff's home location (first venue or prompt for coordinates in future)
-    staff_sites = staff.site_set.all()
+    # Use the site of the first shift the staff has applied to as their 'home' location (if any)
+    staff_shift_request = staff.shift_requests.select_related('shift__site').first()
     staff_lat, staff_lon = None, None
-    if staff_sites.exists() and staff_sites.first().latitude and staff_sites.first().longitude:
-        staff_lat = staff_sites.first().latitude
-        staff_lon = staff_sites.first().longitude
+    if staff_shift_request and staff_shift_request.shift.site.latitude and staff_shift_request.shift.site.longitude:
+        staff_lat = staff_shift_request.shift.site.latitude
+        staff_lon = staff_shift_request.shift.site.longitude
     # If staff has no venue, skip geo filtering (future: allow staff to set home location)
     if staff_lat and staff_lon:
         from geopy.distance import geodesic

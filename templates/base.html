@@ -5,20 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disco - Hospitality Worker Management</title>
     {% load static %}
+    {% load user_type_tags %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
 <body>
     <nav>
         <ul>
             <li class="logo">Disco</li>
-            <li><a href="/">Dashboard</a></li>
-            <li><a href="/workers">Workers</a></li>
-            <li><a href="/availability">Availability</a></li>
-            <li><a href="/bookings">Bookings</a></li>
-            <li class="nav-right"><a href="/profile">Profile</a></li>
             {% if user.is_authenticated %}
-                <li><a href="/logout">Logout</a></li>
+                {% with user_id=user.id %}
+                    {% if user_id %}
+{% if user|is_operator %}
+    <li><a href="/">Dashboard</a></li>
+    <li><a href="/operator/shifts/post/">Post Shift</a></li>
+    <li><a href="/operator/sites/">Manage Venues</a></li>
+    <li><a href="/operator/">Operator Home</a></li>
+{% elif user|is_staffuser %}
+    <li><a href="/">Dashboard</a></li>
+    <li><a href="/shifts/">Browse Shifts</a></li>
+    <li><a href="/availability/">My Availability</a></li>
+    <li><a href="/profile">Profile</a></li>
+{% else %}
+    <li><a href="/">Dashboard</a></li>
+{% endif %}                    {% endif %}
+                {% endwith %}
+                <li class="nav-right"><a href="/logout">Logout</a></li>
             {% else %}
+                <li><a href="/">Home</a></li>
                 <li><a href="{% url 'login' %}">Login</a></li>
                 <li><a href="{% url 'register' %}">Register</a></li>
             {% endif %}
