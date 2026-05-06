@@ -136,4 +136,4 @@ def login(request):
 
 def logout(request):
     auth_logout(request)
-    return render(request, "authentication/logout_success.html")
+    return redirect("home")

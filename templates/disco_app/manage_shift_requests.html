@@ -30,12 +30,12 @@
               <p>Applied for {{ shift }}</p>
             </div>
 
-            <form method="post" action="{% url 'respond_shift_request' req.id %}" class="button-row">
-              {% csrf_token %}
-              <button name="action" value="accept" class="btn-accept">Accept</button>
-              <button name="action" value="decline" class="btn-decline">Decline</button>
-            </form>
-          </div>
+        <form method="post" action="{% url 'respond_to_request' req.id %}" class="button-row">
+          {% csrf_token %}
+          <button name="action" value="accept" class="btn-accept">Accept</button>
+          <button name="action" value="decline" class="btn-decline">Decline</button>
+        </form>          
+      </div>
         {% empty %}
           <div class="empty-state">
             No requests for this shift yet.

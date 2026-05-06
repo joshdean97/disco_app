@@ -1,12 +1,68 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-    <h2>Edit Venue</h2>
-    <form method="post" class="mb-4">
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<section class="dashboard-page">
+  <div class="dashboard-container dashboard-container-narrow">
+
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">Venue Management</p>
+        <h1>Edit Venue</h1>
+        <p class="subtitle">
+          Update the venue details used for posting shifts and calculating staff distance.
+        </p>
+      </div>
+
+      <a href="{% url 'manage_sites' %}" class="btn-secondary">
+        Back to Venues
+      </a>
+    </div>
+
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message {{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="panel">
+      <form method="post" class="styled-form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a href="{% url 'manage_sites' %}" class="btn btn-secondary ml-2">Cancel</a>
-    </form>
-</div>
+
+        {% for field in form %}
+          <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+
+            {% if field.help_text %}
+              <p class="help-text">{{ field.help_text }}</p>
+            {% endif %}
+
+            {% for error in field.errors %}
+              <p class="error-text">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        <div class="button-row">
+          <button type="submit" class="btn-primary">
+            Save Changes
+          </button>
+
+          <a href="{% url 'manage_sites' %}" class="btn-secondary">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</section>
+
 {% endblock %}
