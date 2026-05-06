@@ -311,25 +311,60 @@ def find_staff_for_shift(request, shift_id):
 
     shift = get_object_or_404(Shift, id=shift_id, site__in=operator.sites.all())
 
-    # Convert shift date to weekday (0 = Monday)
     day_of_week = shift.date.weekday()
 
-    # Base query: match role
-    staff_qs = Staff.objects.filter(primary_role=shift.role_required)
+    staff_qs = (
+        Staff.objects.filter(primary_role=shift.role_required)
+        .filter(
+            availability_slots__day_of_week=day_of_week,
+            availability_slots__start_time__lte=shift.start_time,
+            availability_slots__end_time__gte=shift.end_time,
+        )
+        .distinct()
+    )
 
-    # Match availability
-    staff_qs = staff_qs.filter(
-        availability_slots__day_of_week=day_of_week,
-        availability_slots__start_time__lte=shift.start_time,
-        availability_slots__end_time__gte=shift.end_time,
-    ).distinct()
+    staff_results = []
 
-    context = {
-        "shift": shift,
-        "staff_results": staff_qs,
-    }
+    for staff in staff_qs:
+        requests = staff.shift_requests.all()
 
-    return render(request, "disco_app/find_staff.html", context)
+        accepted = requests.filter(status="accepted").count()
+        completed = requests.filter(status="completed").count()
+        cancelled = requests.filter(status="cancelled").count()
+
+        if accepted > 0:
+            reliability = ((completed - (cancelled * 0.5)) / accepted) * 100
+            reliability = max(0, min(100, reliability))
+        else:
+            reliability = None
+
+        staff_results.append(
+            {
+                "staff": staff,
+                "reliability": reliability,
+                "completed": completed,
+            }
+        )
+
+    # 🔥 sort best first
+    staff_results.sort(
+        key=lambda x: (
+            x["reliability"] if x["reliability"] is not None else -1,
+            x["completed"],
+        ),
+        reverse=True,
+    )
+    for i, item in enumerate(staff_results):
+        item["is_top_match"] = i == 0
+
+    return render(
+        request,
+        "disco_app/find_staff.html",
+        {
+            "shift": shift,
+            "staff_results": staff_results,
+        },
+    )
 
 
 @login_required
