@@ -3,36 +3,71 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/register.css' %}">
-<div class="register-container">
-    <h1>Create Account</h1>
-    
-    <form method="post" action="{% url 'register' %}" class="register-form" novalidate>
+
+<section class="register-page">
+  <div class="register-shell">
+
+    <div class="register-hero">
+      <p class="register-eyebrow" id="register-eyebrow">Join Disco</p>
+
+      <h1 id="register-title">Create your hospitality profile.</h1>
+
+      <p id="register-description">
+        Choose whether you're joining as staff or an operator. Disco will show the right setup flow for you.
+      </p>
+
+      <div class="register-benefits">
+        <div id="benefit-1">Staff can set availability and accept shifts</div>
+        <div id="benefit-2">Operators can post shifts and find matched workers</div>
+        <div id="benefit-3">Reliability grows as shifts are completed</div>
+      </div>
+    </div>
+
+    <div class="register-card">
+      <h2>Create Account</h2>
+      <p class="register-card-subtitle">Start by choosing your account type.</p>
+
+      <form method="post" action="{% url 'register' %}" class="register-form" novalidate>
         {% csrf_token %}
-        
+
         <div class="form-group">
-            <label for="user_type">Account Type:</label>
-            <select name="user_type" id="user_type" required onchange="toggleFormType(this.value)" data-user-type="{{ user_type|default:'' }}">
-                <option value="">Select account type</option>
-                <option value="staff" {% if user_type == 'staff' %}selected{% endif %}>Staff Member</option>
-                <option value="operator" {% if user_type == 'operator' %}selected{% endif %}>Operator</option>
-            </select>
+          <label for="user_type">Account Type</label>
+          <select
+            name="user_type"
+            id="user_type"
+            required
+            onchange="toggleFormType(this.value)"
+            data-user-type="{{ user_type|default:'' }}"
+          >
+            <option value="">Select account type</option>
+            <option value="staff" {% if user_type == 'staff' %}selected{% endif %}>Staff Member</option>
+            <option value="operator" {% if user_type == 'operator' %}selected{% endif %}>Operator</option>
+          </select>
         </div>
 
         <div id="staff-form" class="form-section" style="display:none;">
-            <h2>Staff Registration</h2>
-            {{ staff_form.as_p }}
+          <h3>Staff Registration</h3>
+          <p class="section-helper">Build a worker profile operators can trust.</p>
+          {{ staff_form.as_p }}
         </div>
 
         <div id="operator-form" class="form-section" style="display:none;">
-            <h2>Operator Registration</h2>
-            {{ operator_form.as_p }}
+          <h3>Operator Registration</h3>
+          <p class="section-helper">Create your venue-side account and start posting shifts.</p>
+          {{ operator_form.as_p }}
         </div>
 
         <button type="submit" class="btn-primary">Register</button>
-    </form>
+      </form>
 
-    <p>Already have an account? <a href="/login">Login here</a></p>
-</div>
+      <p class="register-login-link">
+        Already have an account?
+        <a href="{% url 'login' %}">Login here</a>
+      </p>
+    </div>
+
+  </div>
+</section>
 
 <script src="{% static 'js/register.js' %}"></script>
 {% endblock %}

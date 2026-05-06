@@ -1,9 +1,80 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<div class="container" style="text-align:center; padding:40px 0;">
-  <h1>🪩 Welcome to Disco</h1>
-  <p style="margin:20px 0; font-size:1.2em;">Flexible hospitality staffing for venues and workers.</p>
-  <a href="/register/" class="btn-primary" style="margin:10px;">Get Started</a>
-  <a href="/login/" class="btn-primary" style="margin:10px;">Login</a>
-</div>
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<section class="dashboard-page">
+  <div class="dashboard-container">
+
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">Hospitality Staffing</p>
+        <h1>Flexible shifts. Trusted workers. Less chaos.</h1>
+        <p class="subtitle">
+          Disco helps venues find available hospitality staff based on role, availability, distance, and reliability.
+        </p>
+
+        <div class="header-actions" style="margin-top: 1.5rem;">
+          <a href="{% url 'register' %}" class="btn-primary">Get Started</a>
+          <a href="{% url 'login' %}" class="btn-secondary">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">For Venues</span>
+        <strong>Post</strong>
+        <p>Create shifts and invite matched workers.</p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">For Staff</span>
+        <strong>Work</strong>
+        <p>Set your availability and accept shifts that fit.</p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Smart Matching</span>
+        <strong>Match</strong>
+        <p>Rank staff by role, distance, availability, and reliability.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Built for hospitality shifts that move fast</h2>
+      </div>
+
+      <div class="shift-list">
+        <div class="shift-item">
+          <div>
+            <strong>Operators find better-fit workers</strong>
+            <p>No more random agency roulette. See who is available, nearby, and reliable.</p>
+          </div>
+          <span class="badge accepted">Operator</span>
+        </div>
+
+        <div class="shift-item">
+          <div>
+            <strong>Staff build a visible reputation</strong>
+            <p>Completed shifts improve trust and help good workers stand out.</p>
+          </div>
+          <span class="badge accepted">Staff</span>
+        </div>
+
+        <div class="shift-item">
+          <div>
+            <strong>Every shift improves the marketplace</strong>
+            <p>Confirmed and completed shifts feed into worker reliability over time.</p>
+          </div>
+          <span class="badge pending">MVP</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 {% endblock %}
