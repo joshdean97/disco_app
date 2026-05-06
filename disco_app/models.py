@@ -91,16 +91,11 @@ class ShiftRequest(models.Model):
         ("completed", "Completed"),
         ("cancelled", "Cancelled"),
     ]
+
     SOURCE_CHOICES = [
         ("application", "Application"),
         ("invite", "Invite"),
     ]
-
-    source = models.CharField(
-        max_length=20,
-        choices=SOURCE_CHOICES,
-        default="application",
-    )
 
     shift = models.ForeignKey(
         Shift,
@@ -118,6 +113,12 @@ class ShiftRequest(models.Model):
         max_length=20,
         choices=STATUS_CHOICES,
         default="pending",
+    )
+
+    source = models.CharField(
+        max_length=20,
+        choices=SOURCE_CHOICES,
+        default="application",
     )
 
     applied_at = models.DateTimeField(auto_now_add=True)

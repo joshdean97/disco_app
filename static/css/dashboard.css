@@ -376,3 +376,9 @@
   background: #fef3c7;
   color: #92400e;
 }
+
+.btn-link {
+  background: transparent;
+  border: 1px solid #cbd5f5;
+  color: #1e293b;
+}

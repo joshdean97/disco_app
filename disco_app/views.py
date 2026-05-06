@@ -282,6 +282,10 @@ def respond_to_invite(request, request_id):
     action = request.POST.get("action")
 
     if action == "accept":
+        if sr.shift.status != "open":
+            messages.error(request, "This shift has already been filled.")
+            return redirect("staff_dashboard")
+
         accepted_requests = ShiftRequest.objects.filter(
             staff=staff,
             status="accepted",
@@ -302,6 +306,14 @@ def respond_to_invite(request, request_id):
 
         sr.shift.status = "confirmed"
         sr.shift.save()
+
+        ShiftRequest.objects.filter(
+            shift=sr.shift,
+            status="pending",
+        ).exclude(id=sr.id).update(
+            status="declined",
+            responded_at=datetime.now(),
+        )
 
         messages.success(request, "You accepted the shift.")
 
@@ -519,7 +531,10 @@ def invite_staff_to_shift(request, shift_id, staff_id):
         return redirect("find_staff_for_shift", shift_id=shift.id)
 
     ShiftRequest.objects.create(
-        shift=shift, staff=staff, status="pending", source="invite"
+        shift=shift,
+        staff=staff,
+        status="pending",
+        source="invite",
     )
 
     messages.success(request, f"{staff.user.username} has been invited to this shift.")
