@@ -6,6 +6,7 @@ from .models import Site, Shift, ShiftRequest
 from authentication.models import Staff, Operator
 from .forms import ShiftForm, SiteForm
 from django.contrib import messages
+from .helpers import shift_times_overlap
 
 
 @login_required
@@ -271,20 +272,42 @@ def respond_to_invite(request, request_id):
     except Staff.DoesNotExist:
         return redirect("register")
 
-    sr = get_object_or_404(ShiftRequest, id=request_id, staff=staff)
+    sr = get_object_or_404(
+        ShiftRequest.objects.select_related("shift"),
+        id=request_id,
+        staff=staff,
+        status="pending",
+    )
 
     action = request.POST.get("action")
 
     if action == "accept":
+        accepted_requests = ShiftRequest.objects.filter(
+            staff=staff,
+            status="accepted",
+            shift__date=sr.shift.date,
+        ).select_related("shift")
+
+        for existing_request in accepted_requests:
+            if shift_times_overlap(sr.shift, existing_request.shift):
+                messages.error(
+                    request,
+                    "You already have an accepted shift that overlaps with this one.",
+                )
+                return redirect("staff_dashboard")
+
         sr.status = "accepted"
+        sr.responded_at = datetime.now()
+        sr.save()
+
         sr.shift.status = "confirmed"
         sr.shift.save()
-        sr.save()
 
         messages.success(request, "You accepted the shift.")
 
     elif action == "decline":
         sr.status = "declined"
+        sr.responded_at = datetime.now()
         sr.save()
 
         messages.info(request, "You declined the shift.")
