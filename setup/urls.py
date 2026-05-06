@@ -60,4 +60,9 @@ urlpatterns = [
         disco_views.respond_to_invite,
         name="respond_to_invite",
     ),
+    path(
+        "operator/shifts/<int:shift_id>/complete/",
+        disco_views.mark_shift_completed,
+        name="mark_shift_completed",
+    ),
 ]

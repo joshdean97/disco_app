@@ -382,3 +382,10 @@
   border: 1px solid #cbd5f5;
   color: #1e293b;
 }
+
+.badge-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.4rem;
+}

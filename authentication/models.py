@@ -20,6 +20,9 @@ class Staff(models.Model):
     year_started = models.IntegerField(blank=True, null=True)
     bio = models.TextField(blank=True)
     travel_radius_miles = models.PositiveIntegerField(default=5)
+    postcode = models.CharField(max_length=20, blank=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -36,7 +39,9 @@ class Availability(models.Model):
         (6, "Sunday"),
     ]
 
-    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name="availability_slots")
+    staff = models.ForeignKey(
+        Staff, on_delete=models.CASCADE, related_name="availability_slots"
+    )
     day_of_week = models.IntegerField(choices=DAY_CHOICES)
     start_time = models.TimeField()
     end_time = models.TimeField()

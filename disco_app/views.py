@@ -6,7 +6,8 @@ from .models import Site, Shift, ShiftRequest
 from authentication.models import Staff, Operator
 from .forms import ShiftForm, SiteForm
 from django.contrib import messages
-from .helpers import shift_times_overlap
+from .helpers import shift_times_overlap, calculate_reliability
+from geopy.distance import geodesic
 
 
 @login_required
@@ -251,15 +252,35 @@ def respond_to_request(request, request_id):
     action = request.POST.get("action")
 
     if action == "accept":
+        if sr.shift.status != "open":
+            messages.error(request, "This shift has already been filled.")
+            return redirect("operator_dashboard")
+
         sr.status = "accepted"
-        sr.shift.status = "confirmed"
-        sr.shift.save()
         sr.responded_at = datetime.now()
         sr.save()
+
+        sr.shift.status = "confirmed"
+        sr.shift.save()
+
+        ShiftRequest.objects.filter(
+            shift=sr.shift,
+            status="pending",
+        ).exclude(id=sr.id).update(
+            status="declined",
+            responded_at=datetime.now(),
+        )
+
+        messages.success(
+            request, f"{sr.staff.user.username} has been accepted for this shift."
+        )
+
     elif action == "decline":
         sr.status = "declined"
         sr.responded_at = datetime.now()
         sr.save()
+
+        messages.info(request, f"{sr.staff.user.username} has been declined.")
 
     return redirect("operator_dashboard")
 
@@ -366,10 +387,6 @@ def manage_sites(request):
     )
 
 
-def shift_times_overlap(a, b):
-    return a.date == b.date and a.start_time < b.end_time and a.end_time > b.start_time
-
-
 @login_required
 def find_staff_for_shift(request, shift_id):
     operator = get_object_or_404(Operator, user=request.user)
@@ -402,11 +419,24 @@ def find_staff_for_shift(request, shift_id):
         completed = reqs.filter(status="completed").count()
         cancelled = reqs.filter(status="cancelled").count()
 
-        reliability = None
-        if accepted > 0:
-            reliability = max(
-                0, min(100, ((completed - 0.5 * cancelled) / accepted) * 100)
-            )
+        reliability = calculate_reliability(
+            accepted,
+            completed,
+            cancelled,
+        )
+        distance_miles = None
+        within_radius = False
+        if (
+            staff.latitude is not None
+            and staff.longitude is not None
+            and shift.site.latitude is not None
+            and shift.site.longitude is not None
+        ):
+            staff_location = (staff.latitude, staff.longitude)
+            site_location = (shift.site.latitude, shift.site.longitude)
+
+            distance_miles = geodesic(staff_location, site_location).miles
+            within_radius = distance_miles <= staff.travel_radius_miles
 
         staff_results.append(
             {
@@ -414,18 +444,21 @@ def find_staff_for_shift(request, shift_id):
                 "reliability": reliability,
                 "completed": completed,
                 "has_conflict": has_conflict,
+                "distance_miles": distance_miles,
+                "within_radius": within_radius,
             }
         )
 
     # sort: best first, conflicts last
     staff_results.sort(
         key=lambda x: (
-            x["has_conflict"],  # False first
-            -(x["reliability"] or -1),  # higher first
-            -x["completed"],  # higher first
+            x["has_conflict"],
+            not x["within_radius"],
+            x["distance_miles"] if x["distance_miles"] is not None else 999,
+            -(x["reliability"] or -1),
+            -x["completed"],
         )
     )
-
     for i, item in enumerate(staff_results):
         item["is_top_match"] = i == 0 and not item["has_conflict"]
 
@@ -437,6 +470,42 @@ def find_staff_for_shift(request, shift_id):
             "staff_results": staff_results,
         },
     )
+
+
+@login_required
+@require_http_methods(["POST"])
+def mark_shift_completed(request, shift_id):
+    try:
+        operator = Operator.objects.get(user=request.user)
+    except Operator.DoesNotExist:
+        return redirect("register")
+
+    shift = get_object_or_404(
+        Shift,
+        id=shift_id,
+        site__in=operator.sites.all(),
+        status="confirmed",
+    )
+
+    accepted_request = ShiftRequest.objects.filter(
+        shift=shift,
+        status="accepted",
+    ).first()
+
+    if not accepted_request:
+        messages.error(request, "No accepted staff member found for this shift.")
+        return redirect("operator_dashboard")
+
+    accepted_request.status = "completed"
+    accepted_request.responded_at = datetime.now()
+    accepted_request.save()
+
+    shift.status = "completed"
+    shift.save()
+
+    messages.success(request, "Shift marked as completed.")
+
+    return redirect("operator_dashboard")
 
 
 @login_required
@@ -456,14 +525,11 @@ def staff_profile(request, staff_id):
     completed_count = completed_requests.count()
     cancelled_count = cancelled_requests.count()
 
-    if accepted_count > 0:
-        reliability = (
-            (completed_count - (cancelled_count * 0.5)) / accepted_count
-        ) * 100
-        reliability = max(0, min(100, reliability))
-    else:
-        reliability = None
-
+    reliability = calculate_reliability(
+        accepted_count,
+        completed_count,
+        cancelled_count,
+    )
     context = {
         "staff_member": staff_member,
         "availability_slots": availability_slots,
@@ -491,6 +557,19 @@ def my_profile(request):
         staff.year_started = request.POST.get("year_started") or None
         staff.bio = request.POST.get("bio", "")
         staff.travel_radius_miles = request.POST.get("travel_radius_miles") or 5
+        staff.postcode = request.POST.get("postcode", "")
+        from geopy.geocoders import Nominatim
+
+        if staff.postcode:
+            geolocator = Nominatim(user_agent="disco_app")
+            try:
+                location = geolocator.geocode(staff.postcode)
+                if location:
+                    staff.latitude = location.latitude
+                    staff.longitude = location.longitude
+            except Exception:
+                pass
+
         staff.save()
 
         messages.success(request, "Profile updated successfully.")
