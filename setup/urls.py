@@ -50,4 +50,9 @@ urlpatterns = [
         disco_views.invite_staff_to_shift,
         name="invite_staff_to_shift",
     ),
+    path(
+        "staff/requests/<int:request_id>/respond/",
+        disco_views.respond_to_invite,
+        name="respond_to_invite",
+    ),
 ]

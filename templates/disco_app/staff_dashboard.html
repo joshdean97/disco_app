@@ -36,15 +36,20 @@
       <div class="panel">
         <h2>Pending Applications</h2>
 
-        {% for req in pending_requests %}
-          <div class="shift-item">
-            <strong>{{ req.shift }}</strong>
-            <span class="badge pending">Pending</span>
-          </div>
-        {% empty %}
-          <div class="empty-state">No pending applications.</div>
-        {% endfor %}
-      </div>
+{% for req in pending_requests %}
+  <div class="shift-item">
+    <div>
+      <strong>{{ req.shift }}</strong>
+      <p>{{ req.shift.site.name }}</p>
+    </div>
+
+    <form method="post" action="{% url 'respond_to_invite' req.id %}" class="button-row">
+      {% csrf_token %}
+      <button name="action" value="accept" class="btn-accept">Accept</button>
+      <button name="action" value="decline" class="btn-decline">Decline</button>
+    </form>
+  </div>
+{% endfor %}      </div>
 
       <div class="panel">
         <h2>Accepted Shifts</h2>

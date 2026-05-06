@@ -200,7 +200,7 @@ def post_shift(request):
             shift.site = form.cleaned_data["site"]
             shift.save()
             messages.success(request, "Shift posted successfully.")
-            return redirect("operator_dashboard")
+            return redirect("find_staff_for_shift", shift_id=shift.id)
     else:
         form = ShiftForm()
         form.fields["site"].queryset = sites
@@ -261,6 +261,35 @@ def respond_to_request(request, request_id):
         sr.save()
 
     return redirect("operator_dashboard")
+
+
+@login_required
+@require_http_methods(["POST"])
+def respond_to_invite(request, request_id):
+    try:
+        staff = Staff.objects.get(user=request.user)
+    except Staff.DoesNotExist:
+        return redirect("register")
+
+    sr = get_object_or_404(ShiftRequest, id=request_id, staff=staff)
+
+    action = request.POST.get("action")
+
+    if action == "accept":
+        sr.status = "accepted"
+        sr.shift.status = "confirmed"
+        sr.shift.save()
+        sr.save()
+
+        messages.success(request, "You accepted the shift.")
+
+    elif action == "decline":
+        sr.status = "declined"
+        sr.save()
+
+        messages.info(request, "You declined the shift.")
+
+    return redirect("staff_dashboard")
 
 
 @login_required
