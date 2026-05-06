@@ -205,3 +205,164 @@
     width: 100%;
   }
 }
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-secondary,
+.btn-small,
+.btn-accept,
+.btn-decline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  text-decoration: none;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.12);
+  color: white;
+  padding: 0.9rem 1.25rem;
+}
+
+.btn-small {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.85rem;
+}
+
+.button-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-accept {
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.55rem 0.85rem;
+}
+
+.btn-decline {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.55rem 0.85rem;
+}
+
+@media (max-width: 800px) {
+  .header-actions {
+    width: 100%;
+  }
+
+  .header-actions a {
+    flex: 1;
+  }
+
+  .shift-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+.filter-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.filter-form label {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.filter-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.filter-row input {
+  flex: 1;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+}
+
+.status-text {
+  color: #047857;
+}
+
+.dashboard-container-narrow {
+  max-width: 760px;
+}
+
+.styled-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.form-field label {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: #00d9ff;
+  box-shadow: 0 0 0 4px rgba(0, 217, 255, 0.16);
+}
+
+.help-text {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.messages {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.message {
+  padding: 1rem;
+  border-radius: 14px;
+  font-weight: 700;
+}
+
+.message.success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}

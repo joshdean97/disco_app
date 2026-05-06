@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<section class="dashboard-page">
+  <div class="dashboard-container">
+
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">Venue Management</p>
+        <h1>Manage Your Venues</h1>
+        <p class="subtitle">
+          Add, view, and edit the venues linked to your operator account.
+        </p>
+      </div>
+
+      <a href="{% url 'operator_dashboard' %}" class="btn-secondary">
+        Back to Dashboard
+      </a>
+    </div>
+
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message {{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="dashboard-grid">
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Add New Venue</h2>
+        </div>
+
+        <form method="post" class="styled-form">
+          {% csrf_token %}
+
+          {% for field in form %}
+            <div class="form-field">
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+
+              {% if field.help_text %}
+                <p class="help-text">{{ field.help_text }}</p>
+              {% endif %}
+
+              {% for error in field.errors %}
+                <p class="error-text">{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endfor %}
+
+          <button type="submit" class="btn-primary">
+            Add Venue
+          </button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Your Venues</h2>
+        </div>
+
+        <div class="shift-list">
+          {% for site in sites %}
+            <div class="shift-item">
+              <div>
+                <strong>{{ site.name }}</strong>
+                <p>
+                  {{ site.address }},
+                  {{ site.city }}
+                  {% if site.postcode %}
+                    , {{ site.postcode }}
+                  {% endif %}
+                </p>
+              </div>
+
+              <a href="{% url 'edit_site' site.id %}" class="btn-small">
+                Edit
+              </a>
+            </div>
+          {% empty %}
+            <div class="empty-state">
+              No venues added yet. Add your first venue to start posting shifts.
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

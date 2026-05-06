@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<section class="dashboard-page">
+  <div class="dashboard-container dashboard-container-narrow">
+
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">My Profile</p>
+        <h1>Edit Profile</h1>
+        <p class="subtitle">Keep your role, experience, bio, and travel radius up to date.</p>
+      </div>
+    </div>
+
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="panel">
+      <form method="post" class="styled-form">
+        {% csrf_token %}
+
+        <div class="form-field">
+          <label for="primary_role">Primary Role</label>
+          <select name="primary_role" id="primary_role">
+            <option value="chef" {% if staff.primary_role == "chef" %}selected{% endif %}>Chef</option>
+            <option value="bartender" {% if staff.primary_role == "bartender" %}selected{% endif %}>Bartender</option>
+            <option value="waiting_staff" {% if staff.primary_role == "waiting_staff" %}selected{% endif %}>Waiting Staff</option>
+            <option value="barista" {% if staff.primary_role == "barista" %}selected{% endif %}>Barista</option>
+            <option value="not_set" {% if staff.primary_role == "not_set" %}selected{% endif %}>Not Set</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="year_started">Year Started</label>
+          <input type="number" name="year_started" id="year_started" value="{{ staff.year_started|default:'' }}">
+        </div>
+
+        <div class="form-field">
+          <label for="travel_radius_miles">Travel Radius Miles</label>
+          <input type="number" name="travel_radius_miles" id="travel_radius_miles" value="{{ staff.travel_radius_miles }}">
+        </div>
+
+        <div class="form-field">
+          <label for="bio">Bio</label>
+          <textarea name="bio" id="bio" rows="5">{{ staff.bio }}</textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">Save Profile</button>
+      </form>
+    </div>
+
+    <div class="panel" style="margin-top: 1rem;">
+      <div class="panel-header">
+        <h2>Your Availability</h2>
+      </div>
+
+      <div class="shift-list">
+        {% for slot in availability_slots %}
+          <div class="shift-item">
+            <div>
+              <strong>{{ slot.get_day_of_week_display }}</strong>
+              <p>{{ slot.start_time|time:"H:i" }} – {{ slot.end_time|time:"H:i" }}</p>
+            </div>
+          </div>
+        {% empty %}
+          <div class="empty-state">No availability added yet.</div>
+        {% endfor %}
+      </div>
+
+      <br>
+      <a href="{% url 'manage_availability' %}" class="btn-small">Edit Availability</a>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

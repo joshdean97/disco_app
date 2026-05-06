@@ -13,27 +13,41 @@ def register(request):
 
     if request.method == "POST":
         user_type = request.POST.get("user_type")
+
         if user_type == "staff":
             staff_form = StaffRegistrationForm(request.POST)
+
             if staff_form.is_valid():
                 user = staff_form.save()
+
                 Staff.objects.create(
                     user=user,
                     primary_role=staff_form.cleaned_data.get("primary_role"),
                     year_started=staff_form.cleaned_data.get("year_started"),
                     bio=staff_form.cleaned_data.get("bio"),
-                    travel_radius_miles=staff_form.cleaned_data.get("travel_radius_miles"),
+                    travel_radius_miles=staff_form.cleaned_data.get(
+                        "travel_radius_miles"
+                    ),
                 )
-                return render(request, "authentication/register_success.html", {"user": user})
+
+                return render(
+                    request, "authentication/register_success.html", {"user": user}
+                )
+
         elif user_type == "operator":
             operator_form = OperatorRegistrationForm(request.POST)
+
             if operator_form.is_valid():
                 user = operator_form.save()
+
                 Operator.objects.create(
                     user=user,
                     company_name=operator_form.cleaned_data.get("company_name"),
                 )
-                return render(request, "authentication/register_success.html", {"user": user})
+
+                return render(
+                    request, "authentication/register_success.html", {"user": user}
+                )
 
     return render(
         request,
@@ -52,7 +66,7 @@ def manage_availability(request):
         staff = Staff.objects.get(user=request.user)
     except Staff.DoesNotExist:
         return redirect("register")
-    
+
     availabilities = staff.availability_slots.all()
     form = AvailabilityForm()
 
@@ -64,11 +78,15 @@ def manage_availability(request):
             availability.save()
             return redirect("manage_availability")
 
-    return render(request, "authentication/manage_availability.html", {
-        "form": form,
-        "availabilities": availabilities,
-        "staff": staff,
-    })
+    return render(
+        request,
+        "authentication/manage_availability.html",
+        {
+            "form": form,
+            "availabilities": availabilities,
+            "staff": staff,
+        },
+    )
 
 
 @login_required
@@ -79,7 +97,7 @@ def delete_availability(request, availability_id):
         availability.delete()
     except (Staff.DoesNotExist, Availability.DoesNotExist):
         pass
-    
+
     return redirect("manage_availability")
 
 
@@ -88,16 +106,18 @@ def login(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        
-        print(f"Login attempt: email={email}, password={'*' * len(password) if password else 'None'}")
-        
+
+        print(
+            f"Login attempt: email={email}, password={'*' * len(password) if password else 'None'}"
+        )
+
         try:
             user_obj = User.objects.get(email=email)
             print(f"User found: {user_obj.username}")
-            
+
             user = authenticate(request, username=user_obj.username, password=password)
             print(f"Authenticate result: {user}")
-            
+
             if user is not None:
                 auth_login(request, user)
                 print("Login successful")
@@ -108,9 +128,12 @@ def login(request):
         except User.DoesNotExist:
             error_message = "Invalid email or password."
             print(f"User not found: {email}")
-    
-    return render(request, "authentication/login.html", {"error_message": error_message})
+
+    return render(
+        request, "authentication/login.html", {"error_message": error_message}
+    )
+
+
 def logout(request):
     auth_logout(request)
     return render(request, "authentication/logout_success.html")
-

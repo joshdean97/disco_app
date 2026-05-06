@@ -1,7 +1,44 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<div class="container">
-  <h1>Post a New Shift</h1>
-  <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit" class="btn-primary">Post Shift</button></form>
-</div>
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<section class="dashboard-page">
+  <div class="dashboard-container dashboard-container-narrow">
+
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">Create Shift</p>
+        <h1>Post a New Shift</h1>
+        <p class="subtitle">Add the shift details and publish it for workers to apply.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <form method="post" class="styled-form">
+        {% csrf_token %}
+
+        {% for field in form %}
+          <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+
+            {% if field.help_text %}
+              <p class="help-text">{{ field.help_text }}</p>
+            {% endif %}
+
+            {% for error in field.errors %}
+              <p class="error-text">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-primary">Post Shift</button>
+      </form>
+    </div>
+
+  </div>
+</section>
+
 {% endblock %}

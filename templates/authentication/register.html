@@ -6,7 +6,7 @@
 <div class="register-container">
     <h1>Create Account</h1>
     
-    <form method="post" action="" class="register-form">
+    <form method="post" action="{% url 'register' %}" class="register-form" novalidate>
         {% csrf_token %}
         
         <div class="form-group">
@@ -28,7 +28,7 @@
             {{ operator_form.as_p }}
         </div>
 
-        <input type="submit" class="btn-primary" value="Register">
+        <button type="submit" class="btn-primary">Register</button>
     </form>
 
     <p>Already have an account? <a href="/login">Login here</a></p>

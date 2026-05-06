@@ -24,8 +24,7 @@
     <li><a href="/">Dashboard</a></li>
     <li><a href="/shifts/">Browse Shifts</a></li>
     <li><a href="/availability/">My Availability</a></li>
-    <li><a href="/profile">Profile</a></li>
-{% else %}
+ <li><a href="{% url 'my_profile' %}">Profile</a></li>
     <li><a href="/">Dashboard</a></li>
 {% endif %}                    {% endif %}
                 {% endwith %}

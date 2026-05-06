@@ -1,25 +1,80 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<div class="container">
-  <h1>Available Shifts</h1>
-  <form method="get" class="form-inline mb-3">
-    <label for="city" class="mr-2">Filter by City:</label>
-    <input type="text" name="city" id="city" value="{{ request.GET.city }}" class="form-control mr-2" placeholder="Enter city">
-    <button type="submit" class="btn btn-primary">Filter</button>
-  </form>
-  <ul>
-    {% for item in shifts_with_status %}
-      <li>
-        <strong>{{ item.shift }}</strong>
-        {% if item.applied_status %}
-          <span style="color:green;">({{ item.applied_status|capfirst }})</span>
-        {% else %}
-          <form method="post" action="/shifts/{{ item.shift.id }}/apply/" style="display:inline;">{% csrf_token %}<button type="submit">Apply</button></form>
-        {% endif %}
-      </li>
-    {% empty %}
-      <li>No shifts available.</li>
-    {% endfor %}
-  </ul>
-</div>
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<section class="dashboard-page">
+  <div class="dashboard-container">
+
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">Shift Marketplace</p>
+        <h1>Available Shifts</h1>
+        <p class="subtitle">
+          Find hospitality shifts near you and apply in one click.
+        </p>
+      </div>
+    </div>
+
+    <!-- FILTER -->
+    <div class="panel">
+      <form method="get" class="filter-form">
+        <label for="city">Filter by city</label>
+        <div class="filter-row">
+          <input 
+            type="text" 
+            name="city" 
+            id="city" 
+            value="{{ request.GET.city }}" 
+            placeholder="e.g. Leeds"
+          >
+          <button type="submit" class="btn-primary">Filter</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- SHIFTS -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Shifts ({{ total_shifts }})</h2>
+      </div>
+
+      <div class="shift-list">
+        {% for item in shifts_with_status %}
+          <div class="shift-item">
+
+            <div>
+              <strong>{{ item.shift }}</strong>
+
+              {% if item.is_recommended %}
+                <p class="status-text">Recommended for your role</p>
+              {% else %}
+                <p>Available shift</p>
+              {% endif %}
+            </div>
+
+            {% if item.applied_status %}
+              <span class="badge accepted">
+                {{ item.applied_status|capfirst }}
+              </span>
+            {% else %}
+              <form method="post" action="{% url 'apply_for_shift' item.shift.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-small">Apply</button>
+              </form>
+            {% endif %}
+
+          </div>
+        {% empty %}
+          <div class="empty-state">
+            No shifts available right now. Check back soon.
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</section>
+
 {% endblock %}

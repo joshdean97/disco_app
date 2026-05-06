@@ -1,0 +1,62 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+
+<section class="dashboard-page">
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">Smart Matching</p>
+        <h1>Available Staff</h1>
+        <p class="subtitle">
+          {{ shift.get_role_required_display }} • {{ shift.date }} • {{
+          shift.start_time }}–{{ shift.end_time }}
+        </p>
+      </div>
+        {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div class="message {{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+      <a href="{% url 'operator_dashboard' %}" class="btn-secondary"> Back </a>
+    </div>
+
+    <div class="panel">
+      <div class="shift-list">
+        {% for staff in staff_results %}
+        <div class="shift-item">
+          <div>
+            <strong>{{ staff.user.username }}</strong>
+            <p>{{ staff.get_primary_role_display }}</p>
+          </div>
+
+          <div class="button-row">
+            <a href="{% url 'staff_profile' staff.id %}" class="btn-small">
+              View Profile
+            </a>
+
+            <form
+              method="post"
+              action="{% url 'invite_staff_to_shift' shift.id staff.id %}"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn-small">Invite</button>
+            </form>
+          </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+          No available staff match the requirements for this shift.
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

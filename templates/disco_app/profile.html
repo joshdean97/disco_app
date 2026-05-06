@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<section class="dashboard-page">
+  <div class="dashboard-container">
+
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">Staff Profile</p>
+        <h1>{{ staff_member.user.username }}</h1>
+        <p class="subtitle">
+          {{ staff_member.get_primary_role_display }}
+          {% if staff_member.year_started %}
+            • Experience since {{ staff_member.year_started }}
+          {% endif %}
+        </p>
+      </div>
+
+      <a href="{% url 'operator_dashboard' %}" class="btn-secondary">
+        Back to Dashboard
+      </a>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Reliability</span>
+        {% if reliability is not None %}
+          <strong>{{ reliability|floatformat:0 }}%</strong>
+        {% else %}
+          <strong>New</strong>
+        {% endif %}
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Completed</span>
+        <strong>{{ completed_count }}</strong>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Accepted</span>
+        <strong>{{ accepted_count }}</strong>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Pending</span>
+        <strong>{{ pending_count }}</strong>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>About</h2>
+        </div>
+
+        {% if staff_member.bio %}
+          <p>{{ staff_member.bio }}</p>
+        {% else %}
+          <div class="empty-state">No bio added yet.</div>
+        {% endif %}
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Availability</h2>
+        </div>
+
+        <div class="shift-list">
+          {% for slot in availability_slots %}
+            <div class="shift-item">
+              <div>
+                <strong>{{ slot.get_day_of_week_display }}</strong>
+                <p>{{ slot.start_time|time:"H:i" }} – {{ slot.end_time|time:"H:i" }}</p>
+              </div>
+            </div>
+          {% empty %}
+            <div class="empty-state">No availability added yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Accepted Shifts</h2>
+        </div>
+
+        <div class="shift-list">
+          {% for req in accepted_requests %}
+            <div class="shift-item">
+              <div>
+                <strong>{{ req.shift }}</strong>
+                <p>{{ req.shift.site.city }}</p>
+              </div>
+            </div>
+          {% empty %}
+            <div class="empty-state">No accepted shifts yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Completed Shifts</h2>
+        </div>
+
+        <div class="shift-list">
+          {% for req in completed_requests %}
+            <div class="shift-item">
+              <div>
+                <strong>{{ req.shift }}</strong>
+                <p>{{ req.shift.site.city }}</p>
+              </div>
+            </div>
+          {% empty %}
+            <div class="empty-state">No completed shifts yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
