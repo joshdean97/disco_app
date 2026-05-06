@@ -75,7 +75,7 @@ class Shift(models.Model):
     notes = models.TextField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         ordering = ["-date", "-start_time"]
 
@@ -91,31 +91,41 @@ class ShiftRequest(models.Model):
         ("completed", "Completed"),
         ("cancelled", "Cancelled"),
     ]
+    SOURCE_CHOICES = [
+        ("application", "Application"),
+        ("invite", "Invite"),
+    ]
+
+    source = models.CharField(
+        max_length=20,
+        choices=SOURCE_CHOICES,
+        default="application",
+    )
 
     shift = models.ForeignKey(
         Shift,
         on_delete=models.CASCADE,
         related_name="applications",
     )
-    
+
     staff = models.ForeignKey(
         "authentication.Staff",
         on_delete=models.CASCADE,
         related_name="shift_requests",
     )
-    
+
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default="pending",
     )
-    
+
     applied_at = models.DateTimeField(auto_now_add=True)
     responded_at = models.DateTimeField(null=True, blank=True)
-    
+
     class Meta:
         ordering = ["-applied_at"]
         unique_together = ["shift", "staff"]
-    
+
     def __str__(self):
         return f"{self.staff.user.username} → {self.shift} ({self.status})"

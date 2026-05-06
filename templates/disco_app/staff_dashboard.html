@@ -12,56 +12,129 @@
         <p class="eyebrow">Staff Portal</p>
         <h1>Welcome back, {{ staff.user.username }}</h1>
         <p class="subtitle">
-          Track your applications, accepted shifts, and find your next booking.
+          Manage invites, track your shifts, and build your reputation.
         </p>
       </div>
 
-      <a href="/shifts/" class="btn-primary">Browse Shifts</a>
+      <div class="header-actions">
+        <a href="{% url 'browse_shifts' %}" class="btn-primary">Browse Shifts</a>
+        <a href="{% url 'my_profile' %}" class="btn-secondary">Profile</a>
+      </div>
     </div>
+
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message {{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
 
     <div class="stats-grid">
       <div class="stat-card">
         <span class="stat-label">Pending</span>
-        <strong>{{ pending_requests|length }}</strong>
+        <strong>{{ pending_count }}</strong>
       </div>
 
       <div class="stat-card">
         <span class="stat-label">Accepted</span>
-        <strong>{{ accepted_requests|length }}</strong>
+        <strong>{{ accepted_count }}</strong>
       </div>
     </div>
 
     <div class="dashboard-grid">
 
       <div class="panel">
-        <h2>Pending Applications</h2>
+        <div class="panel-header">
+          <h2>Pending Requests</h2>
+        </div>
 
-{% for req in pending_requests %}
-  <div class="shift-item">
-    <div>
-      <strong>{{ req.shift }}</strong>
-      <p>{{ req.shift.site.name }}</p>
-    </div>
+        <div class="shift-list">
+          {% for req in pending_requests %}
+            <div class="shift-item">
+              <div>
+                <strong>{{ req.shift }}</strong>
 
-    <form method="post" action="{% url 'respond_to_invite' req.id %}" class="button-row">
-      {% csrf_token %}
-      <button name="action" value="accept" class="btn-accept">Accept</button>
-      <button name="action" value="decline" class="btn-decline">Decline</button>
-    </form>
-  </div>
-{% endfor %}      </div>
+                {% if req.source == "invite" %}
+                  <p class="status-text">You were invited to this shift</p>
+                  <span class="badge accepted">Invited</span>
+                {% else %}
+                  <p class="status-text">You applied for this shift</p>
+                  <span class="badge pending">Applied</span>
+                {% endif %}
+              </div>
+
+              <form method="post" action="{% url 'respond_to_invite' req.id %}" class="button-row">
+                {% csrf_token %}
+                <button name="action" value="accept" class="btn-accept">Accept</button>
+                <button name="action" value="decline" class="btn-decline">Decline</button>
+              </form>
+            </div>
+          {% empty %}
+            <div class="empty-state">No pending requests.</div>
+          {% endfor %}
+        </div>
+      </div>
 
       <div class="panel">
-        <h2>Accepted Shifts</h2>
+        <div class="panel-header">
+          <h2>Upcoming Shifts</h2>
+        </div>
 
-        {% for req in accepted_requests %}
-          <div class="shift-item">
-            <strong>{{ req.shift }}</strong>
-            <span class="badge accepted">Accepted</span>
-          </div>
-        {% empty %}
-          <div class="empty-state">No accepted shifts yet.</div>
-        {% endfor %}
+        <div class="shift-list">
+          {% for req in accepted_requests %}
+            <div class="shift-item">
+              <div>
+                <strong>{{ req.shift }}</strong>
+                <p>
+                  {{ req.shift.date }} •
+                  {{ req.shift.start_time|time:"H:i" }} – {{ req.shift.end_time|time:"H:i" }}
+                </p>
+                <span class="badge accepted">Confirmed</span>
+              </div>
+            </div>
+          {% empty %}
+            <div class="empty-state">No upcoming shifts yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Completed Shifts</h2>
+        </div>
+
+        <div class="shift-list">
+          {% for req in completed_requests %}
+            <div class="shift-item">
+              <div>
+                <strong>{{ req.shift }}</strong>
+                <p>{{ req.shift.site.name }} • {{ req.shift.site.city }}</p>
+                <span class="badge accepted">Completed</span>
+              </div>
+            </div>
+          {% empty %}
+            <div class="empty-state">No completed shifts yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Profile Strength</h2>
+        </div>
+
+        <div class="empty-state">
+          Keep your role, bio, and availability updated so operators can find and trust you.
+        </div>
+
+        <br>
+
+        <a href="{% url 'my_profile' %}" class="btn-small">
+          Update Profile
+        </a>
       </div>
 
     </div>

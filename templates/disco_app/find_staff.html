@@ -38,48 +38,48 @@
       </div>
 
       <div class="shift-list">
-        {% for item in staff_results %}
-          <div class="shift-item">
+{% for item in staff_results %}
+  <div class="shift-item">
 
-            <div>
-              <strong>{{ item.staff.user.username }}</strong>
+    <div>
+      <strong>{{ item.staff.user.username }}</strong>
 
-              {% if item.is_top_match %}
-                <span class="badge accepted">Top Match</span>
-              {% endif %}
+      {% if item.is_top_match %}
+        <span class="badge accepted">Top Match</span>
+      {% endif %}
 
-              <p class="muted">{{ item.staff.get_primary_role_display }}</p>
+      {% if item.has_conflict %}
+        <span class="badge pending">Has Conflict</span>
+      {% endif %}
 
-              {% if item.reliability is not None %}
-                <p class="status-text">
-                  {{ item.reliability|floatformat:0 }}% reliable • {{ item.completed }} completed shifts
-                </p>
-              {% else %}
-                <p class="status-text">
-                  New to Disco • No completed shifts yet
-                </p>
-              {% endif %}
-            </div>
+      <p class="muted">{{ item.staff.get_primary_role_display }}</p>
 
-            <div class="button-row">
-              <a href="{% url 'staff_profile' item.staff.id %}" class="btn-small">
-                View Profile
-              </a>
+      {% if item.reliability is not None %}
+        <p class="status-text">
+          {{ item.reliability|floatformat:0 }}% reliable • {{ item.completed }} completed
+        </p>
+      {% else %}
+        <p class="status-text">New to Disco</p>
+      {% endif %}
+    </div>
 
-              <form method="post" action="{% url 'invite_staff_to_shift' shift.id item.staff.id %}">
-                {% csrf_token %}
-                <button type="submit" class="btn-small">
-                  Invite
-                </button>
-              </form>
-            </div>
+    <div class="button-row">
+      <a href="{% url 'staff_profile' item.staff.id %}" class="btn-secondary">
+        View Profile
+      </a>
 
-          </div>
-        {% empty %}
-          <div class="empty-state">
-            No staff available for this shift.
-          </div>
-        {% endfor %}
+      {% if item.has_conflict %}
+        <button class="btn-small" disabled>Invite</button>
+      {% else %}
+        <form method="post" action="{% url 'invite_staff_to_shift' shift.id item.staff.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary">Invite</button>
+        </form>
+      {% endif %}
+    </div>
+
+  </div>
+{% endfor %}
       </div>
     </div>
 

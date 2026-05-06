@@ -354,21 +354,21 @@ def manage_sites(request):
     )
 
 
+def shift_times_overlap(a, b):
+    return a.date == b.date and a.start_time < b.end_time and a.end_time > b.start_time
+
+
 @login_required
 def find_staff_for_shift(request, shift_id):
-    try:
-        operator = Operator.objects.get(user=request.user)
-    except Operator.DoesNotExist:
-        return redirect("register")
-
+    operator = get_object_or_404(Operator, user=request.user)
     shift = get_object_or_404(Shift, id=shift_id, site__in=operator.sites.all())
 
-    day_of_week = shift.date.weekday()
+    day = shift.date.weekday()
 
     staff_qs = (
         Staff.objects.filter(primary_role=shift.role_required)
         .filter(
-            availability_slots__day_of_week=day_of_week,
+            availability_slots__day_of_week=day,
             availability_slots__start_time__lte=shift.start_time,
             availability_slots__end_time__gte=shift.end_time,
         )
@@ -378,36 +378,44 @@ def find_staff_for_shift(request, shift_id):
     staff_results = []
 
     for staff in staff_qs:
-        requests = staff.shift_requests.all()
+        reqs = staff.shift_requests.select_related("shift")
 
-        accepted = requests.filter(status="accepted").count()
-        completed = requests.filter(status="completed").count()
-        cancelled = requests.filter(status="cancelled").count()
+        accepted_same_day = reqs.filter(status="accepted", shift__date=shift.date)
 
+        has_conflict = any(
+            shift_times_overlap(shift, r.shift) for r in accepted_same_day
+        )
+
+        accepted = reqs.filter(status="accepted").count()
+        completed = reqs.filter(status="completed").count()
+        cancelled = reqs.filter(status="cancelled").count()
+
+        reliability = None
         if accepted > 0:
-            reliability = ((completed - (cancelled * 0.5)) / accepted) * 100
-            reliability = max(0, min(100, reliability))
-        else:
-            reliability = None
+            reliability = max(
+                0, min(100, ((completed - 0.5 * cancelled) / accepted) * 100)
+            )
 
         staff_results.append(
             {
                 "staff": staff,
                 "reliability": reliability,
                 "completed": completed,
+                "has_conflict": has_conflict,
             }
         )
 
-    # 🔥 sort best first
+    # sort: best first, conflicts last
     staff_results.sort(
         key=lambda x: (
-            x["reliability"] if x["reliability"] is not None else -1,
-            x["completed"],
-        ),
-        reverse=True,
+            x["has_conflict"],  # False first
+            -(x["reliability"] or -1),  # higher first
+            -x["completed"],  # higher first
+        )
     )
+
     for i, item in enumerate(staff_results):
-        item["is_top_match"] = i == 0
+        item["is_top_match"] = i == 0 and not item["has_conflict"]
 
     return render(
         request,
@@ -510,7 +518,9 @@ def invite_staff_to_shift(request, shift_id, staff_id):
         )
         return redirect("find_staff_for_shift", shift_id=shift.id)
 
-    ShiftRequest.objects.create(shift=shift, staff=staff, status="pending")
+    ShiftRequest.objects.create(
+        shift=shift, staff=staff, status="pending", source="invite"
+    )
 
     messages.success(request, f"{staff.user.username} has been invited to this shift.")
 
