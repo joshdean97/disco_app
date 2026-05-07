@@ -80,10 +80,12 @@ class Shift(models.Model):
         ordering = ["-date", "-start_time"]
 
     def __str__(self):
+        formatted_date = self.date.strftime("%A %d %B").replace(" 0", " ")
+
         return (
             f"{self.get_role_required_display()} "
             f"at {self.site.name} "
-            f"on {self.date}"
+            f"on {formatted_date}"
         )
 
 
