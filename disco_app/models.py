@@ -80,7 +80,11 @@ class Shift(models.Model):
         ordering = ["-date", "-start_time"]
 
     def __str__(self):
-        return f"{self.role_required} at {self.site.name} on {self.date}"
+        return (
+            f"{self.get_role_required_display()} "
+            f"at {self.site.name} "
+            f"on {self.date}"
+        )
 
 
 class ShiftRequest(models.Model):
