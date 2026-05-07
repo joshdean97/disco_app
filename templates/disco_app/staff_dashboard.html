@@ -12,7 +12,7 @@
         <p class="eyebrow">Staff Portal</p>
         <h1>Welcome back, {{ staff.user.username }}</h1>
         <p class="subtitle">
-          Manage invites, track your shifts, and build your reputation.
+          Manage invites, track your shifts, and build your DiscoRank.
         </p>
       </div>
 
@@ -33,6 +33,12 @@
     {% endif %}
 
     <div class="stats-grid">
+      <div class="stat-card disco-rank-card">
+        <span class="stat-label">DiscoRank</span>
+        <strong>{{ staff.disco_rank|default:"70" }}</strong>
+        <p>{{ staff.disco_tier|default:"Silver" }} Tier</p>
+      </div>
+
       <div class="stat-card">
         <span class="stat-label">Pending</span>
         <strong>{{ pending_count }}</strong>
@@ -121,13 +127,26 @@
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel disco-info-panel">
         <div class="panel-header">
-          <h2>Profile Strength</h2>
+          <h2>Build Your DiscoRank</h2>
         </div>
 
-        <div class="empty-state">
-          Keep your role, bio, and availability updated so operators can find and trust you.
+        <div class="rank-breakdown">
+          <div>
+            <strong>Complete shifts</strong>
+            <span>Boosts your score</span>
+          </div>
+
+          <div>
+            <strong>Accept invites</strong>
+            <span>Shows operators you are active</span>
+          </div>
+
+          <div>
+            <strong>Avoid no-shows</strong>
+            <span>Protects your reputation</span>
+          </div>
         </div>
 
         <br>

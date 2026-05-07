@@ -24,6 +24,38 @@ class Staff(models.Model):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
 
+    disco_rank = models.PositiveIntegerField(default=70)
+    completed_shifts = models.PositiveIntegerField(default=0)
+    cancelled_shifts = models.PositiveIntegerField(default=0)
+    no_shows = models.PositiveIntegerField(default=0)
+    late_arrivals = models.PositiveIntegerField(default=0)
+    positive_reviews = models.PositiveIntegerField(default=0)
+
+    @property
+    def disco_tier(self):
+        if self.disco_rank >= 90:
+            return "Platinum"
+        elif self.disco_rank >= 80:
+            return "Gold"
+        elif self.disco_rank >= 70:
+            return "Silver"
+        elif self.disco_rank >= 60:
+            return "Bronze"
+        return "Building"
+
+    def recalculate_disco_rank(self):
+        score = 70
+
+        score += self.completed_shifts * 2
+        score += self.positive_reviews * 3
+
+        score -= self.cancelled_shifts * 5
+        score -= self.late_arrivals * 4
+        score -= self.no_shows * 15
+
+        self.disco_rank = max(0, min(score, 100))
+        self.save()
+
     def __str__(self):
         return self.user.username
 

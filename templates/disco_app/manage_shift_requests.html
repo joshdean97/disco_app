@@ -11,7 +11,9 @@
       <div>
         <p class="eyebrow">Shift Requests</p>
         <h1>Requests for {{ shift }}</h1>
-        <p class="subtitle">Review applicants and choose who you want for this shift.</p>
+        <p class="subtitle">
+          Review applicants by DiscoRank, profile strength, and shift fit.
+        </p>
       </div>
 
       <a href="{% url 'operator_dashboard' %}" class="btn-secondary">Back to Dashboard</a>
@@ -24,18 +26,24 @@
 
       <div class="shift-list">
         {% for req in requests %}
-          <div class="shift-item">
-            <div>
+          <div class="shift-item applicant-card">
+            <div class="applicant-info">
               <strong>{{ req.staff.user.username }}</strong>
               <p>Applied for {{ shift }}</p>
+
+              <div class="rank-pill">
+                <span>DiscoRank</span>
+                <strong>{{ req.staff.disco_rank|default:"70" }}</strong>
+                <em>{{ req.staff.disco_tier|default:"Silver" }}</em>
+              </div>
             </div>
 
-        <form method="post" action="{% url 'respond_to_request' req.id %}" class="button-row">
-          {% csrf_token %}
-          <button name="action" value="accept" class="btn-accept">Accept</button>
-          <button name="action" value="decline" class="btn-decline">Decline</button>
-        </form>          
-      </div>
+            <form method="post" action="{% url 'respond_to_request' req.id %}" class="button-row">
+              {% csrf_token %}
+              <button name="action" value="accept" class="btn-accept">Accept</button>
+              <button name="action" value="decline" class="btn-decline">Decline</button>
+            </form>
+          </div>
         {% empty %}
           <div class="empty-state">
             No requests for this shift yet.

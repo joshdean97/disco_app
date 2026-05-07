@@ -32,21 +32,62 @@
 
     <div class="panel">
       <div class="panel-header">
-        <h2>Best Matches</h2>
+        <div>
+          <h2>Best Matches</h2>
+          <p class="panel-subtitle">
+            Compare staff by DiscoRank, distance, availability, and shift fit.
+          </p>
+        </div>
       </div>
 
       <div class="shift-list">
         {% for item in staff_results %}
-          <div class="shift-item">
+          <div class="shift-item staff-match-card">
 
-            <div>
-              <strong>{{ item.staff.user.username }}</strong>
+            <div class="staff-match-main">
+              <div class="staff-match-heading">
+                <div>
+                  <strong>{{ item.staff.user.username }}</strong>
+                  <p class="muted">{{ item.staff.get_primary_role_display }}</p>
+                </div>
 
-              {% if item.distance_miles %}
-                <p>{{ item.distance_miles|floatformat:1 }} miles away</p>
-              {% else %}
-                <p>Distance unknown</p>
-              {% endif %}
+                <div class="rank-pill">
+                  <span>DiscoRank</span>
+                  <strong>{{ item.staff.disco_rank|default:"70" }}</strong>
+                  <em>{{ item.staff.disco_tier|default:"Silver" }}</em>
+                </div>
+              </div>
+
+              <div class="staff-match-meta">
+                <div>
+                  <strong>{{ item.completed|default:"0" }}</strong>
+                  <span>Completed</span>
+                </div>
+
+                {% if item.reliability %}
+                  <div>
+                    <strong>{{ item.reliability|floatformat:0 }}%</strong>
+                    <span>Reliable</span>
+                  </div>
+                {% else %}
+                  <div>
+                    <strong>New</strong>
+                    <span>To Disco</span>
+                  </div>
+                {% endif %}
+
+                {% if item.distance_miles %}
+                  <div>
+                    <strong>{{ item.distance_miles|floatformat:1 }}</strong>
+                    <span>Miles Away</span>
+                  </div>
+                {% else %}
+                  <div>
+                    <strong>?</strong>
+                    <span>Distance</span>
+                  </div>
+                {% endif %}
+              </div>
 
               <div class="badge-row">
                 {% if item.distance_miles %}
@@ -65,20 +106,10 @@
                   <span class="badge pending">Has Conflict</span>
                 {% endif %}
               </div>
-
-              <p class="muted">{{ item.staff.get_primary_role_display }}</p>
-
-              {% if item.reliability %}
-                <p class="status-text">
-                  {{ item.reliability|floatformat:0 }}% reliable • {{ item.completed }} completed
-                </p>
-              {% else %}
-                <p class="status-text">New to Disco</p>
-              {% endif %}
             </div>
 
             <div class="button-row">
-              <a href="{% url 'staff_profile' item.staff.id %}" class="btn-link btn-secondary">
+              <a href="{% url 'staff_profile' item.staff.id %}" class="btn-small">
                 View Profile
               </a>
 

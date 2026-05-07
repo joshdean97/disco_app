@@ -12,7 +12,7 @@
         <p class="eyebrow">Operator Portal</p>
         <h1>Welcome back, {{ operator.user.username }}</h1>
         <p class="subtitle">
-          Post shifts, find workers, manage venues, and track completed bookings.
+          Post shifts, find workers, manage venues, and book trusted staff using DiscoRank.
         </p>
       </div>
 
@@ -112,10 +112,16 @@
 
         <div class="shift-list">
           {% for req in pending_requests %}
-            <div class="shift-item">
-              <div>
+            <div class="shift-item applicant-card">
+              <div class="applicant-info">
                 <strong>{{ req.staff.user.username }}</strong>
                 <p>{{ req.shift }}</p>
+
+                <div class="rank-pill">
+                  <span>DiscoRank</span>
+                  <strong>{{ req.staff.disco_rank|default:"70" }}</strong>
+                  <em>{{ req.staff.disco_tier|default:"Silver" }}</em>
+                </div>
               </div>
 
               <form
@@ -148,7 +154,7 @@
             <div class="shift-item">
               <div>
                 <strong>{{ shift }}</strong>
-                <p>Completed and counted toward worker reliability.</p>
+                <p>Completed and counted toward worker DiscoRank.</p>
               </div>
 
               <span class="badge accepted">Completed</span>

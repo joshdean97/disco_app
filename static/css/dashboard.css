@@ -389,3 +389,259 @@
   flex-wrap: wrap;
   margin-top: 0.4rem;
 }
+
+/* =========================
+   DISCORANK
+========================= */
+
+.disco-rank-card {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.disco-rank-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right,
+      rgba(0, 217, 255, 0.25),
+      transparent 45%);
+  pointer-events: none;
+}
+
+.disco-rank-card strong {
+  color: #00d9ff;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.disco-rank-card p {
+  color: #cbd5e1;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+/* =========================
+   APPLICANT CARDS
+========================= */
+
+.applicant-card {
+  align-items: center;
+}
+
+.applicant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.applicant-info p {
+  margin: 0;
+}
+
+/* =========================
+   RANK PILL
+========================= */
+
+.rank-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: fit-content;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e0f7ff, #f0f9ff);
+  border: 1px solid #bae6fd;
+}
+
+.rank-pill span {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  color: #0369a1;
+}
+
+.rank-pill strong {
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.rank-pill em {
+  font-style: normal;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+/* =========================
+   DISCO INFO PANEL
+========================= */
+
+.disco-info-panel {
+  background: linear-gradient(135deg, #ffffff, #f8fbff);
+}
+
+.rank-breakdown {
+  display: grid;
+  gap: 1rem;
+}
+
+.rank-breakdown div {
+  padding: 1rem;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.rank-breakdown strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #0f172a;
+}
+
+.rank-breakdown span {
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.button-row {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.btn-small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #dbe4ee;
+  transition: all 0.2s ease;
+}
+
+.btn-small:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 0.9rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+.btn-accept,
+.btn-decline {
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-accept {
+  background: #10b981;
+  color: white;
+}
+
+.btn-accept:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.btn-decline {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.btn-decline:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   STATUS TEXT
+========================= */
+
+.status-text {
+  margin-top: 0.3rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* =========================
+   HEADER ACTIONS
+========================= */
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* =========================
+   3 COLUMN STATS
+========================= */
+
+.stats-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 800px) {
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .header-actions a {
+    flex: 1;
+  }
+
+  .button-row {
+    width: 100%;
+  }
+
+  .button-row button,
+  .button-row a {
+    flex: 1;
+  }
+
+  .rank-pill {
+    flex-wrap: wrap;
+  }
+
+  .stats-grid.three {
+    grid-template-columns: 1fr;
+  }
+}
