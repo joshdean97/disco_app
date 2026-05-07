@@ -47,7 +47,7 @@
             <div class="staff-match-main">
               <div class="staff-match-heading">
                 <div>
-                  <strong>{{ item.staff.user.username }}</strong>
+                  <strong>{{ item.staff.full_name }}</strong>
                   <p class="muted">{{ item.staff.get_primary_role_display }}</p>
                 </div>
 
@@ -113,15 +113,33 @@
                 View Profile
               </a>
 
-              {% if item.has_conflict %}
-                <button type="button" class="btn-small" disabled>Unavailable</button>
-              {% else %}
-                <form method="post" action="{% url 'invite_staff_to_shift' shift.id item.staff.id %}">
-                  {% csrf_token %}
-                  <button type="submit" class="btn-primary">Invite</button>
-                </form>
-              {% endif %}
-            </div>
+{% if item.existing_request %}
+  {% if item.existing_request.status == "pending" %}
+    {% if item.existing_request.source == "invite" %}
+      <button type="button" class="btn-small" disabled>Invited</button>
+    {% else %}
+      <span class="badge pending">Applied</span>
+    {% endif %}
+
+  {% elif item.existing_request.status == "accepted" %}
+    <span class="badge accepted">Booked</span>
+
+  {% elif item.existing_request.status == "declined" %}
+    <span class="badge pending">Declined</span>
+
+  {% else %}
+    <span class="badge pending">{{ item.existing_request.status|capfirst }}</span>
+  {% endif %}
+
+{% elif item.has_conflict %}
+  <button type="button" class="btn-small" disabled>Unavailable</button>
+
+{% else %}
+  <form method="post" action="{% url 'invite_staff_to_shift' shift.id item.staff.id %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-primary">Invite</button>
+  </form>
+{% endif %}            </div>
 
           </div>
         {% empty %}

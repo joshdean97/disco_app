@@ -19,13 +19,11 @@
     <li><a href="/">Dashboard</a></li>
     <li><a href="/operator/shifts/post/">Post Shift</a></li>
     <li><a href="/operator/sites/">Manage Venues</a></li>
-    <li><a href="/operator/">Operator Home</a></li>
 {% elif user|is_staffuser %}
     <li><a href="/">Dashboard</a></li>
     <li><a href="/shifts/">Browse Shifts</a></li>
     <li><a href="/availability/">My Availability</a></li>
  <li><a href="{% url 'my_profile' %}">Profile</a></li>
-    <li><a href="/">Dashboard</a></li>
 {% endif %}                    {% endif %}
                 {% endwith %}
                 <li class="nav-right"><a href="/logout">Logout</a></li>

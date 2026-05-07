@@ -58,12 +58,16 @@ def staff_dashboard(request):
 
     # Get staff's shift requests
     pending_requests = staff.shift_requests.filter(status="pending")
+    pending_invites = pending_requests.filter(source="invite")
+    pending_applications = pending_requests.filter(source="application")
     accepted_requests = staff.shift_requests.filter(status="accepted")
     completed_requests = staff.shift_requests.filter(status="completed")
 
     context = {
         "staff": staff,
         "pending_requests": pending_requests,
+        "pending_invites": pending_invites,
+        "pending_applications": pending_applications,
         "accepted_requests": accepted_requests,
         "completed_requests": completed_requests,
         "pending_count": pending_requests.count(),
@@ -162,6 +166,21 @@ def operator_dashboard(request):
     # Get shifts for operator's sites
     open_shifts = Shift.objects.filter(site__in=sites, status="open")
     confirmed_shifts = Shift.objects.filter(site__in=sites, status="confirmed")
+    confirmed_shift_data = []
+
+    for shift in confirmed_shifts:
+        accepted_request = (
+            shift.applications.filter(status="accepted")
+            .select_related("staff", "staff__user")
+            .first()
+        )
+
+        confirmed_shift_data.append(
+            {
+                "shift": shift,
+                "accepted_request": accepted_request,
+            }
+        )
     completed_shifts = Shift.objects.filter(site__in=sites, status="completed")
 
     # Get pending shift requests across operator's sites
@@ -178,6 +197,7 @@ def operator_dashboard(request):
         "pending_requests": pending_requests,
         "pending_count": pending_requests.count(),
         "open_count": open_shifts.count(),
+        "confirmed_shift_data": confirmed_shift_data,
     }
 
     return render(request, "disco_app/operator_dashboard.html", context)
@@ -409,7 +429,10 @@ def find_staff_for_shift(request, shift_id):
     for staff in staff_qs:
         reqs = staff.shift_requests.select_related("shift")
 
-        accepted_same_day = reqs.filter(status="accepted", shift__date=shift.date)
+        accepted_same_day = reqs.filter(
+            status="accepted",
+            shift__date=shift.date,
+        ).exclude(shift=shift)
 
         has_conflict = any(
             shift_times_overlap(shift, r.shift) for r in accepted_same_day
@@ -437,7 +460,7 @@ def find_staff_for_shift(request, shift_id):
 
             distance_miles = geodesic(staff_location, site_location).miles
             within_radius = distance_miles <= staff.travel_radius_miles
-
+            existing_request = reqs.filter(shift=shift).first()
         staff_results.append(
             {
                 "staff": staff,
@@ -446,6 +469,7 @@ def find_staff_for_shift(request, shift_id):
                 "has_conflict": has_conflict,
                 "distance_miles": distance_miles,
                 "within_radius": within_radius,
+                "existing_request": existing_request,
             }
         )
 

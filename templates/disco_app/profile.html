@@ -10,7 +10,7 @@
     <div class="dashboard-header">
       <div>
         <p class="eyebrow">Staff Profile</p>
-        <h1>{{ staff_member.user.username }}</h1>
+        <h1>{{ staff_member.full_name }}</h1>
         <p class="subtitle">
           {{ staff_member.get_primary_role_display }}
           {% if staff_member.year_started %}

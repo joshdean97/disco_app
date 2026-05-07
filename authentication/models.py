@@ -43,6 +43,15 @@ class Staff(models.Model):
             return "Bronze"
         return "Building"
 
+    @property
+    def full_name(self):
+        full = f"{self.user.first_name} {self.user.last_name}".strip()
+
+        if full:
+            return full
+
+        return self.user.username
+
     def recalculate_disco_rank(self):
         score = 70
 
@@ -90,5 +99,15 @@ class Operator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=100, blank=True)
 
-    def __str__(self):
-        return self.company_name or self.user.username
+    @property
+    def full_name(self):
+        full = f"{self.user.first_name} {self.user.last_name}".strip()
+
+        if full:
+            return full
+
+        return self.user.username
+
+
+def __str__(self):
+    return self.company_name or self.user.username

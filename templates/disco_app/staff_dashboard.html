@@ -10,7 +10,7 @@
     <div class="dashboard-header">
       <div>
         <p class="eyebrow">Staff Portal</p>
-        <h1>Welcome back, {{ staff.user.username }}</h1>
+        <h1>Welcome back, {{ staff.full_name }}</h1>
         <p class="subtitle">
           Manage invites, track your shifts, and build your DiscoRank.
         </p>
@@ -39,11 +39,15 @@
         <p>{{ staff.disco_tier|default:"Silver" }} Tier</p>
       </div>
 
-      <div class="stat-card">
-        <span class="stat-label">Pending</span>
-        <strong>{{ pending_count }}</strong>
-      </div>
+<div class="stat-card">
+  <span class="stat-label">Invites</span>
+  <strong>{{ pending_invites|length }}</strong>
+</div>
 
+<div class="stat-card">
+  <span class="stat-label">Applications</span>
+  <strong>{{ pending_applications|length }}</strong>
+</div>
       <div class="stat-card">
         <span class="stat-label">Accepted</span>
         <strong>{{ accepted_count }}</strong>
@@ -52,38 +56,70 @@
 
     <div class="dashboard-grid">
 
-      <div class="panel">
-        <div class="panel-header">
-          <h2>Pending Requests</h2>
+<div class="panel">
+  <div class="panel-header">
+    <h2>Invites From Venues</h2>
+  </div>
+
+  <div class="shift-list">
+    {% for req in pending_invites %}
+      <div class="shift-item">
+        <div>
+          <strong>{{ req.shift }}</strong>
+          <p class="status-text">
+            {{ req.shift.site.name }} invited you to work
+          </p>
+
+          <span class="badge accepted">Invited</span>
         </div>
 
-        <div class="shift-list">
-          {% for req in pending_requests %}
-            <div class="shift-item">
-              <div>
-                <strong>{{ req.shift }}</strong>
+        <form
+          method="post"
+          action="{% url 'respond_to_invite' req.id %}"
+          class="button-row"
+        >
+          {% csrf_token %}
+          <button name="action" value="accept" class="btn-accept">
+            Accept
+          </button>
 
-                {% if req.source == "invite" %}
-                  <p class="status-text">You were invited to this shift</p>
-                  <span class="badge accepted">Invited</span>
-                {% else %}
-                  <p class="status-text">You applied for this shift</p>
-                  <span class="badge pending">Applied</span>
-                {% endif %}
-              </div>
+          <button name="action" value="decline" class="btn-decline">
+            Decline
+          </button>
+        </form>
+      </div>
+    {% empty %}
+      <div class="empty-state">
+        No invites right now.
+      </div>
+    {% endfor %}
+  </div>
+</div>
 
-              <form method="post" action="{% url 'respond_to_invite' req.id %}" class="button-row">
-                {% csrf_token %}
-                <button name="action" value="accept" class="btn-accept">Accept</button>
-                <button name="action" value="decline" class="btn-decline">Decline</button>
-              </form>
-            </div>
-          {% empty %}
-            <div class="empty-state">No pending requests.</div>
-          {% endfor %}
+<div class="panel">
+  <div class="panel-header">
+    <h2>My Applications</h2>
+  </div>
+
+  <div class="shift-list">
+    {% for req in pending_applications %}
+      <div class="shift-item">
+        <div>
+          <strong>{{ req.shift }}</strong>
+          <p class="status-text">
+            Waiting for venue response
+          </p>
+
+          <span class="badge pending">Applied</span>
         </div>
       </div>
-
+    {% empty %}
+      <div class="empty-state">
+        No pending applications.
+      </div>
+    {% endfor %}
+  </div>
+</div>
       <div class="panel">
         <div class="panel-header">
           <h2>Upcoming Shifts</h2>

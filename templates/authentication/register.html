@@ -29,6 +29,17 @@
 
       <form method="post" action="{% url 'register' %}" class="register-form" novalidate>
         {% csrf_token %}
+        {% if staff_form.errors %}
+  <div class="error-box">
+    {{ staff_form.errors }}
+  </div>
+{% endif %}
+
+{% if operator_form.errors %}
+  <div class="error-box">
+    {{ operator_form.errors }}
+  </div>
+{% endif %}
 
         <div class="form-group">
           <label for="user_type">Account Type</label>

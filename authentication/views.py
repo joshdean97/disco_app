@@ -7,18 +7,21 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 
 
 def register(request):
-    staff_form = StaffRegistrationForm()
-    operator_form = OperatorRegistrationForm()
+    staff_form = StaffRegistrationForm(prefix="staff")
+    operator_form = OperatorRegistrationForm(prefix="operator")
     user_type = None
 
     if request.method == "POST":
         user_type = request.POST.get("user_type")
 
         if user_type == "staff":
-            staff_form = StaffRegistrationForm(request.POST)
+            staff_form = StaffRegistrationForm(request.POST, prefix="staff")
 
             if staff_form.is_valid():
-                user = staff_form.save()
+                user = staff_form.save(commit=False)
+                user.first_name = staff_form.cleaned_data["first_name"]
+                user.last_name = staff_form.cleaned_data["last_name"]
+                user.save()
 
                 Staff.objects.create(
                     user=user,
@@ -30,15 +33,16 @@ def register(request):
                     ),
                 )
 
-                return render(
-                    request, "authentication/register_success.html", {"user": user}
-                )
+                return redirect("login")
 
         elif user_type == "operator":
-            operator_form = OperatorRegistrationForm(request.POST)
+            operator_form = OperatorRegistrationForm(request.POST, prefix="operator")
 
             if operator_form.is_valid():
-                user = operator_form.save()
+                user = operator_form.save(commit=False)
+                user.first_name = operator_form.cleaned_data["first_name"]
+                user.last_name = operator_form.cleaned_data["last_name"]
+                user.save()
 
                 Operator.objects.create(
                     user=user,
