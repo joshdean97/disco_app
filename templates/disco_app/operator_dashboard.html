@@ -21,7 +21,74 @@
         >
       </div>
     </div>
+    {% if completion_percentage == 100 %}
 
+<div class="success-card">
+  <strong>Venue setup complete 🎉</strong>
+  <p>You’re ready to build your trusted Disco crew.</p>
+</div>
+
+{% else %}
+
+<div class="onboarding-card">
+
+  <div class="onboarding-header">
+    <div>
+      <p class="eyebrow">Get Started</p>
+      <h2>Set up your operator profile</h2>
+    </div>
+
+    <div class="completion-ring">
+      {{ completion_percentage }}%
+    </div>
+  </div>
+
+  <div class="checklist">
+
+    <a href="/operator/sites/" class="check-item {% if profile_steps.site %}done{% endif %}">
+      <div class="check-icon">
+        {% if profile_steps.site %}✓{% else %}○{% endif %}
+      </div>
+
+      <div class="check-content">
+        <span class="check-title">Add your first venue</span>
+        <span class="check-subtitle">
+          Create the venues you want to hire for
+        </span>
+      </div>
+    </a>
+
+    <a href="/operator/shifts/post/" class="check-item {% if profile_steps.shift %}done{% endif %}">
+      <div class="check-icon">
+        {% if profile_steps.shift %}✓{% else %}○{% endif %}
+      </div>
+
+      <div class="check-content">
+        <span class="check-title">Post your first shift</span>
+        <span class="check-subtitle">
+          Start attracting hospitality staff nearby
+        </span>
+      </div>
+    </a>
+
+    <a href="/operator/" class="check-item {% if profile_steps.requests %}done{% endif %}">
+      <div class="check-icon">
+        {% if profile_steps.requests %}✓{% else %}○{% endif %}
+      </div>
+
+      <div class="check-content">
+        <span class="check-title">Review shift requests</span>
+        <span class="check-subtitle">
+          Accept or decline applicants to build your trusted crew
+        </span>
+      </div>
+    </a>
+
+  </div>
+
+</div>
+
+{% endif %}
     <div class="stats-grid">
       <div class="stat-card">
         <span class="stat-label">Open Shifts</span>
@@ -75,7 +142,14 @@
             </div>
           </div>
           {% empty %}
-          <div class="empty-state">No open shifts yet.</div>
+          <div class="empty-state">
+  <h3>No active shifts</h3>
+  <p>Post your first shift to start receiving applications.</p>
+
+  <a href="/operator/shifts/post/" class="btn-primary">
+    Post Shift
+  </a>
+</div>
           {% endfor %}
         </div>
       </div>
@@ -188,7 +262,10 @@
         </form>
       </div>
     {% empty %}
-      <div class="empty-state">No pending requests.</div>
+      <div class="empty-state">
+  <h3>No requests yet</h3>
+  <p>Applications from staff will appear here once shifts are posted.</p>
+</div>
     {% endfor %}
   </div>
 </div>

@@ -31,7 +31,62 @@
         {% endfor %}
       </div>
     {% endif %}
+    {% if completion_percentage == 100 %}
+  <div class="success-card">
+    <strong>Profile complete 🎉</strong>
+    <p>You’re ready to receive invites and build your DiscoRank.</p>
+  </div>
+{% else %}
+    <div class="onboarding-card">
+  <div class="onboarding-header">
+    <div>
+      <p class="eyebrow">Get Started</p>
+      <h2>Complete your Disco profile</h2>
+    </div>
 
+    <div class="completion-ring">
+      {{ completion_percentage }}%
+    </div>
+  </div>
+
+<div class="checklist">
+
+  <a href="/profile/" class="check-item {% if profile_steps.profile_role %}done{% endif %}">
+    <div class="check-icon">{% if profile_steps.profile_role %}✓{% else %}○{% endif %}</div>
+    <div class="check-content">
+      <span class="check-title">Add your primary role</span>
+      <span class="check-subtitle">Show venues what kind of work you do best</span>
+    </div>
+  </a>
+
+  <a href="/profile/" class="check-item {% if profile_steps.bio %}done{% endif %}">
+    <div class="check-icon">{% if profile_steps.bio %}✓{% else %}○{% endif %}</div>
+    <div class="check-content">
+      <span class="check-title">Write a short bio</span>
+      <span class="check-subtitle">Help operators quickly understand your experience</span>
+    </div>
+  </a>
+
+  <a href="/availability/" class="check-item {% if profile_steps.availability %}done{% endif %}">
+    <div class="check-icon">{% if profile_steps.availability %}✓{% else %}○{% endif %}</div>
+    <div class="check-content">
+      <span class="check-title">Set your availability</span>
+      <span class="check-subtitle">Let venues know when you’re free to work</span>
+    </div>
+  </a>
+
+  <a href="/shifts/" class="check-item {% if profile_steps.first_application %}done{% endif %}">
+    <div class="check-icon">{% if profile_steps.first_application %}✓{% else %}○{% endif %}</div>
+    <div class="check-content">
+      <span class="check-title">Apply for your first shift</span>
+      <span class="check-subtitle">Start building your DiscoRank with real shifts</span>
+    </div>
+  </a>
+
+</div>
+  </div>
+</div>
+{% endif %}
     <div class="stats-grid">
       <div class="stat-card disco-rank-card">
         <span class="stat-label">DiscoRank</span>

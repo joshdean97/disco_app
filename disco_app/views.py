@@ -63,6 +63,16 @@ def staff_dashboard(request):
     accepted_requests = staff.shift_requests.filter(status="accepted")
     completed_requests = staff.shift_requests.filter(status="completed")
 
+    profile_steps = {
+        "availability": staff.availability_slots.exists(),
+        "bio": bool(staff.bio),
+        "profile_role": bool(staff.primary_role),
+        "first_application": ShiftRequest.objects.filter(staff=staff).exists(),
+    }
+
+    completed_steps = sum(profile_steps.values())
+    completion_percentage = int((completed_steps / len(profile_steps)) * 100)
+
     context = {
         "staff": staff,
         "pending_requests": pending_requests,
@@ -72,6 +82,8 @@ def staff_dashboard(request):
         "completed_requests": completed_requests,
         "pending_count": pending_requests.count(),
         "accepted_count": accepted_requests.count(),
+        "profile_steps": profile_steps,
+        "completion_percentage": completion_percentage,
     }
 
     return render(request, "disco_app/staff_dashboard.html", context)
@@ -160,12 +172,12 @@ def operator_dashboard(request):
     except Operator.DoesNotExist:
         return redirect("register")
 
-    # Get operator's sites
     sites = operator.sites.all()
 
-    # Get shifts for operator's sites
     open_shifts = Shift.objects.filter(site__in=sites, status="open")
     confirmed_shifts = Shift.objects.filter(site__in=sites, status="confirmed")
+    completed_shifts = Shift.objects.filter(site__in=sites, status="completed")[:5]
+
     confirmed_shift_data = []
 
     for shift in confirmed_shifts:
@@ -181,12 +193,22 @@ def operator_dashboard(request):
                 "accepted_request": accepted_request,
             }
         )
-    completed_shifts = Shift.objects.filter(site__in=sites, status="completed")[:5]
 
-    # Get pending shift requests across operator's sites
     pending_requests = ShiftRequest.objects.filter(
         shift__site__in=sites, status="pending"
-    ).select_related("staff", "shift", "shift__site")[:5]
+    ).select_related("staff", "staff__user", "shift", "shift__site")[:5]
+
+    profile_steps = {
+        "site": sites.exists(),
+        "shift": Shift.objects.filter(site__in=sites).exists(),
+        "requests": ShiftRequest.objects.filter(
+            shift__site__in=sites, status__in=["accepted", "declined"]
+        ).exists(),
+    }
+
+    completion_percentage = int(
+        (sum(profile_steps.values()) / len(profile_steps)) * 100
+    )
 
     context = {
         "operator": operator,
@@ -198,6 +220,8 @@ def operator_dashboard(request):
         "pending_count": pending_requests.count(),
         "open_count": open_shifts.count(),
         "confirmed_shift_data": confirmed_shift_data,
+        "profile_steps": profile_steps,
+        "completion_percentage": completion_percentage,
     }
 
     return render(request, "disco_app/operator_dashboard.html", context)

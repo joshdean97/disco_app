@@ -145,6 +145,16 @@
     font-style: italic;
 }
 
+.tip-banner {
+  background: #ecfeff;
+  border: 1px solid #a5f3fc;
+  color: #0f172a;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
     .availability-content {
         grid-template-columns: 1fr;
