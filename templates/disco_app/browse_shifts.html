@@ -1,12 +1,9 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 
 <section class="dashboard-page">
   <div class="dashboard-container">
-
     <div class="dashboard-header">
       <div>
         <p class="eyebrow">Shift Marketplace</p>
@@ -22,13 +19,13 @@
       <form method="get" class="filter-form">
         <label for="city">Filter by city</label>
         <div class="filter-row">
-          <input 
-            type="text" 
-            name="city" 
-            id="city" 
-            value="{{ request.GET.city }}" 
+          <input
+            type="text"
+            name="city"
+            id="city"
+            value="{{ request.GET.city }}"
             placeholder="e.g. Leeds"
-          >
+          />
           <button type="submit" class="btn-primary">Filter</button>
         </div>
       </form>
@@ -42,38 +39,44 @@
 
       <div class="shift-list">
         {% for item in shifts_with_status %}
-          <div class="shift-item">
+        <div class="shift-item">
+          <div>
+            <strong>{{ item.shift }}</strong>
 
-            <div>
-              <strong>{{ item.shift }}</strong>
+            <p>
+              £{{ item.shift.hourly_rate }} per hour • 
+              {{ item.shift.start_time|time:"H:i" }} – 
+              {{ item.shift.end_time|time:"H:i" }}
+            </p>
 
-              {% if item.is_recommended %}
-                <p class="status-text">Recommended for your role</p>
-              {% else %}
-                <p>Available shift</p>
-              {% endif %}
-            </div>
-
-            {% if item.applied_status %}
-              <span class="badge accepted">
-                {{ item.applied_status|capfirst }}
-              </span>
+            {% if item.is_recommended %}
+            <p class="status-text">Recommended for your role</p>
             {% else %}
-              <form method="post" action="{% url 'apply_for_shift' item.shift.id %}">
-                {% csrf_token %}
-                <button type="submit" class="btn-small">Apply</button>
-              </form>
+            <p>Available shift</p>
             {% endif %}
+          </div>
 
-          </div>
+          {% if item.applied_status %}
+          <span class="badge accepted">
+            {{ item.applied_status|capfirst }}
+          </span>
+          {% else %}
+          <form
+            method="post"
+            action="{% url 'apply_for_shift' item.shift.id %}"
+          >
+            {% csrf_token %}
+            <button type="submit" class="btn-small">Apply</button>
+          </form>
+          {% endif %}
+        </div>
         {% empty %}
-          <div class="empty-state">
-            No shifts available right now. Check back soon.
-          </div>
+        <div class="empty-state">
+          No shifts available right now. Check back soon.
+        </div>
         {% endfor %}
       </div>
     </div>
-
   </div>
 </section>
 

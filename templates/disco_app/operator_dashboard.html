@@ -1,24 +1,24 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 
 <section class="dashboard-page">
   <div class="dashboard-container">
-
     <div class="dashboard-header">
       <div>
         <p class="eyebrow">Operator Portal</p>
         <h1>Welcome back, {{ operator.full_name }}</h1>
         <p class="subtitle">
-          Post shifts, find workers, manage venues, and book trusted staff using DiscoRank.
+          Post shifts, find workers, manage venues, and book trusted staff using
+          DiscoRank.
         </p>
       </div>
 
       <div class="header-actions">
         <a href="{% url 'post_shift' %}" class="btn-primary">Post Shift</a>
-        <a href="{% url 'manage_sites' %}" class="btn-secondary">Manage Venues</a>
+        <a href="{% url 'manage_sites' %}" class="btn-secondary"
+          >Manage Venues</a
+        >
       </div>
     </div>
 
@@ -45,32 +45,37 @@
     </div>
 
     <div class="dashboard-grid">
-
       <div class="panel">
         <div class="panel-header">
           <h2>Open Shifts</h2>
         </div>
 
-        <div class="shift-list">
+        <div class="shift-list panel-scroll">
           {% for shift in open_shifts %}
-            <div class="shift-item">
-              <div>
-                <strong>{{ shift }}</strong>
-                <p>Live and accepting worker requests.</p>
-              </div>
-
-              <div class="button-row">
-                <a href="{% url 'manage_shift_requests' shift.id %}" class="btn-small">
-                  View Requests
-                </a>
-
-                <a href="{% url 'find_staff_for_shift' shift.id %}" class="btn-small">
-                  Find Staff
-                </a>
-              </div>
+          <div class="shift-item">
+            <div>
+              <strong>{{ shift }}</strong>
+              <p>Live and accepting worker requests.</p>
             </div>
+
+            <div class="button-row">
+              <a
+                href="{% url 'manage_shift_requests' shift.id %}"
+                class="btn-small"
+              >
+                View Requests
+              </a>
+
+              <a
+                href="{% url 'find_staff_for_shift' shift.id %}"
+                class="btn-small"
+              >
+                Find Staff
+              </a>
+            </div>
+          </div>
           {% empty %}
-            <div class="empty-state">No open shifts yet.</div>
+          <div class="empty-state">No open shifts yet.</div>
           {% endfor %}
         </div>
       </div>
@@ -81,111 +86,133 @@
         </div>
 
         <div class="shift-list">
-{% for item in confirmed_shift_data %}
-  <div class="shift-item applicant-card">
-    <div class="applicant-info">
-      <strong>{{ item.shift }}</strong>
+          {% for item in confirmed_shift_data %}
+          <div class="shift-item applicant-card">
+            <div class="applicant-info">
+              <strong>{{ item.shift }}</strong>
 
-      {% if item.accepted_request %}
-        <p>
-          {{ item.accepted_request.staff.full_name }} is booked for this shift.
-        </p>
+              {% if item.accepted_request %}
+              <p>
+                {{ item.accepted_request.staff.full_name }} is booked for this
+                shift.
+              </p>
 
-        <div class="rank-pill">
-          <span>DiscoRank</span>
-          <strong>{{ item.accepted_request.staff.disco_rank|default:"70" }}</strong>
-          <em>{{ item.accepted_request.staff.disco_tier|default:"Silver" }}</em>
-        </div>
-      {% else %}
-        <p>Confirmed, but no accepted worker found.</p>
-      {% endif %}
-    </div>
+              <p class="shift-meta">
+  £{{ item.shift.hourly_rate }} per hour •
+  {{ item.shift.date|date:"l j F" }} •
+  {{ item.shift.start_time|time:"H:i" }} –
+  {{ item.shift.end_time|time:"H:i" }}
+</p>
 
-    <div class="button-row">
-      {% if item.accepted_request %}
-        <a href="{% url 'staff_profile' item.accepted_request.staff.id %}" class="btn-small">
-          View Profile
-        </a>
-      {% endif %}
+<div class="rank-pill">
+  <span>DiscoRank</span>
 
-      <form
-        method="post"
-        action="{% url 'mark_shift_completed' item.shift.id %}"
-      >
-        {% csrf_token %}
-        <button type="submit" class="btn-accept">
-          Mark Completed
-        </button>
-      </form>
-    </div>
-  </div>
-{% empty %}
-  <div class="empty-state">No confirmed shifts.</div>
-{% endfor %}        </div>
-      </div>
+  <strong>
+    {{ req.staff.disco_rank|default:"70" }}
+  </strong>
 
-      <div class="panel">
-        <div class="panel-header">
-          <h2>Pending Requests</h2>
-        </div>
+  <em>
+    {{ req.staff.disco_tier|default:"Silver" }}
+  </em>
+</div>              {% else %}
+              <p>Confirmed, but no accepted worker found.</p>
+              {% endif %}
+            </div>
 
-        <div class="shift-list">
-          {% for req in pending_requests %}
-            <div class="shift-item applicant-card">
-              <div class="applicant-info">
-                <strong>{{ req.staff.full_name }}</strong>
-                <p>{{ req.shift }}</p>
-
-                <div class="rank-pill">
-                  <span>DiscoRank</span>
-                  <strong>{{ req.staff.disco_rank|default:"70" }}</strong>
-                  <em>{{ req.staff.disco_tier|default:"Silver" }}</em>
-                </div>
-              </div>
+            <div class="button-row">
+              {% if item.accepted_request %}
+              <a
+                href="{% url 'staff_profile' item.accepted_request.staff.id %}"
+                class="btn-small"
+              >
+                View Profile
+              </a>
+              {% endif %}
 
               <form
                 method="post"
-                action="{% url 'respond_to_request' req.id %}"
-                class="button-row"
+                action="{% url 'mark_shift_completed' item.shift.id %}"
               >
                 {% csrf_token %}
-                <button name="action" value="accept" class="btn-accept">
-                  Accept
-                </button>
-                <button name="action" value="decline" class="btn-decline">
-                  Decline
+                <button type="submit" class="btn-accept">Mark Completed</button>
+              </form>
+              <form
+                method="post"
+                action="{% url 'cancel_shift_booking' item.shift.id %}"
+              >
+                {% csrf_token %}
+
+                <button type="submit" class="btn-decline">
+                  Cancel Booking
                 </button>
               </form>
             </div>
+          </div>
           {% empty %}
-            <div class="empty-state">No pending requests.</div>
+          <div class="empty-state">No confirmed shifts.</div>
           {% endfor %}
         </div>
       </div>
 
+<div class="panel">
+  <div class="panel-header">
+    <h2>Pending Requests</h2>
+  </div>
+
+  <div class="shift-list panel-scroll">
+    {% for req in pending_requests %}
+      <div class="shift-item applicant-card">
+        <div class="applicant-info">
+          <strong>{{ req.staff.full_name }}</strong>
+          <p>{{ req.shift }}</p>
+
+          <div class="rank-pill">
+            <span>DiscoRank</span>
+            <strong>{{ req.staff.disco_rank|default:"70" }}</strong>
+            <em>{{ req.staff.disco_tier|default:"Silver" }}</em>
+          </div>
+        </div>
+
+        <form
+          method="post"
+          action="{% url 'respond_to_request' req.id %}"
+          class="button-row"
+        >
+          {% csrf_token %}
+          <button name="action" value="accept" class="btn-accept">
+            Accept
+          </button>
+          <button name="action" value="decline" class="btn-decline">
+            Decline
+          </button>
+        </form>
+      </div>
+    {% empty %}
+      <div class="empty-state">No pending requests.</div>
+    {% endfor %}
+  </div>
+</div>
       <div class="panel">
         <div class="panel-header">
           <h2>Completed Shifts</h2>
         </div>
 
-        <div class="shift-list">
+        <div class="shift-list panel-scroll">
           {% for shift in completed_shifts %}
-            <div class="shift-item">
-              <div>
-                <strong>{{ shift }}</strong>
-                <p>Completed and counted toward worker DiscoRank.</p>
-              </div>
-
-              <span class="badge accepted">Completed</span>
+          <div class="shift-item">
+            <div>
+              <strong>{{ shift }}</strong>
+              <p>Completed and counted toward worker DiscoRank.</p>
             </div>
+
+            <span class="badge accepted">Completed</span>
+          </div>
           {% empty %}
-            <div class="empty-state">No completed shifts yet.</div>
+          <div class="empty-state">No completed shifts yet.</div>
           {% endfor %}
         </div>
       </div>
-
     </div>
-
   </div>
 </section>
 

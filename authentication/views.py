@@ -49,9 +49,7 @@ def register(request):
                     company_name=operator_form.cleaned_data.get("company_name"),
                 )
 
-                return render(
-                    request, "authentication/register_success.html", {"user": user}
-                )
+                return redirect("login")
 
     return render(
         request,
@@ -125,7 +123,7 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 print("Login successful")
-                return render(request, "authentication/login_success.html")
+                return redirect("home")
             else:
                 error_message = "Invalid email or password."
                 print("Authentication failed - password incorrect")

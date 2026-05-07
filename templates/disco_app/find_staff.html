@@ -1,21 +1,18 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 
 <section class="dashboard-page">
   <div class="dashboard-container">
-
     <div class="dashboard-header">
       <div>
         <p class="eyebrow">Smart Matching</p>
         <h1>Available Staff</h1>
         <p class="subtitle">
-          {{ shift.get_role_required_display }} •
-          {{ shift.date }} •
-          {{ shift.start_time|time:"H:i" }} –
-          {{ shift.end_time|time:"H:i" }}
+          {{ shift.get_role_required_display }} • 
+          £{{ shift.hourly_rate }} per hour • 
+          {{ shift.date|date:"l j F" }} • 
+          {{ shift.start_time|time:"H:i"}} – {{ shift.end_time|time:"H:i" }}
         </p>
       </div>
 
@@ -23,11 +20,11 @@
     </div>
 
     {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-          <div class="message {{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-      </div>
+    <div class="messages">
+      {% for message in messages %}
+      <div class="message {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
     {% endif %}
 
     <div class="panel">
@@ -42,76 +39,67 @@
 
       <div class="shift-list">
         {% for item in staff_results %}
-          <div class="shift-item staff-match-card">
-
-            <div class="staff-match-main">
-              <div class="staff-match-heading">
-                <div>
-                  <strong>{{ item.staff.full_name }}</strong>
-                  <p class="muted">{{ item.staff.get_primary_role_display }}</p>
-                </div>
-
-                <div class="rank-pill">
-                  <span>DiscoRank</span>
-                  <strong>{{ item.staff.disco_rank|default:"70" }}</strong>
-                  <em>{{ item.staff.disco_tier|default:"Silver" }}</em>
-                </div>
+        <div class="shift-item staff-match-card">
+          <div class="staff-match-main">
+            <div class="staff-match-heading">
+              <div>
+                <strong>{{ item.staff.full_name }}</strong>
+                <p class="muted">{{ item.staff.get_primary_role_display }}</p>
               </div>
 
-              <div class="staff-match-meta">
-                <div>
-                  <strong>{{ item.completed|default:"0" }}</strong>
-                  <span>Completed</span>
-                </div>
-
-                {% if item.reliability %}
-                  <div>
-                    <strong>{{ item.reliability|floatformat:0 }}%</strong>
-                    <span>Reliable</span>
-                  </div>
-                {% else %}
-                  <div>
-                    <strong>New</strong>
-                    <span>To Disco</span>
-                  </div>
-                {% endif %}
-
-                {% if item.distance_miles %}
-                  <div>
-                    <strong>{{ item.distance_miles|floatformat:1 }}</strong>
-                    <span>Miles Away</span>
-                  </div>
-                {% else %}
-                  <div>
-                    <strong>?</strong>
-                    <span>Distance</span>
-                  </div>
-                {% endif %}
-              </div>
-
-              <div class="badge-row">
-                {% if item.distance_miles %}
-                  {% if item.within_radius %}
-                    <span class="badge accepted">Within radius</span>
-                  {% else %}
-                    <span class="badge pending">Outside radius</span>
-                  {% endif %}
-                {% endif %}
-
-                {% if item.is_top_match %}
-                  <span class="badge accepted">Top Match</span>
-                {% endif %}
-
-                {% if item.has_conflict %}
-                  <span class="badge pending">Has Conflict</span>
-                {% endif %}
+              <div class="rank-pill">
+                <span>DiscoRank</span>
+                <strong>{{ item.staff.disco_rank|default:"70" }}</strong>
+                <em>{{ item.staff.disco_tier|default:"Silver" }}</em>
               </div>
             </div>
 
-            <div class="button-row">
-              <a href="{% url 'staff_profile' item.staff.id %}" class="btn-small">
-                View Profile
-              </a>
+            <div class="staff-match-meta">
+              <div>
+                <strong>{{ item.completed|default:"0" }}</strong>
+                <span>Completed</span>
+              </div>
+
+              {% if item.reliability %}
+              <div>
+                <strong>{{ item.reliability|floatformat:0 }}%</strong>
+                <span>Reliable</span>
+              </div>
+              {% else %}
+              <div>
+                <strong>New</strong>
+                <span>To Disco</span>
+              </div>
+              {% endif %} {% if item.distance_miles %}
+              <div>
+                <strong>{{ item.distance_miles|floatformat:1 }}</strong>
+                <span>Miles Away</span>
+              </div>
+              {% else %}
+              <div>
+                <strong>?</strong>
+                <span>Distance</span>
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="badge-row">
+              {% if item.distance_miles %} {% if item.within_radius %}
+              <span class="badge accepted">Within radius</span>
+              {% else %}
+              <span class="badge pending">Outside radius</span>
+              {% endif %} {% endif %} {% if item.is_top_match %}
+              <span class="badge accepted">Top Match</span>
+              {% endif %} {% if item.has_conflict %}
+              <span class="badge pending">Has Conflict</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="button-row">
+            <a href="{% url 'staff_profile' item.staff.id %}" class="btn-small">
+              View Profile
+            </a>
 
 {% if item.existing_request %}
   {% if item.existing_request.status == "pending" %}
@@ -128,26 +116,32 @@
     <span class="badge pending">Declined</span>
 
   {% else %}
-    <span class="badge pending">{{ item.existing_request.status|capfirst }}</span>
+    <span class="badge pending">
+      {{ item.existing_request.status|capfirst }}
+    </span>
   {% endif %}
 
 {% elif item.has_conflict %}
-  <button type="button" class="btn-small" disabled>Unavailable</button>
+  <button type="button" class="btn-small" disabled>
+    Unavailable
+  </button>
 
 {% else %}
-  <form method="post" action="{% url 'invite_staff_to_shift' shift.id item.staff.id %}">
+  <form
+    method="post"
+    action="{% url 'invite_staff_to_shift' shift.id item.staff.id %}"
+  >
     {% csrf_token %}
     <button type="submit" class="btn-primary">Invite</button>
   </form>
-{% endif %}            </div>
-
+{% endif %}
           </div>
+        </div>
         {% empty %}
-          <div class="empty-state">No staff available for this shift.</div>
+        <div class="empty-state">No staff available for this shift.</div>
         {% endfor %}
       </div>
     </div>
-
   </div>
 </section>
 

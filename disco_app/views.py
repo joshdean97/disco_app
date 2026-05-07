@@ -181,12 +181,12 @@ def operator_dashboard(request):
                 "accepted_request": accepted_request,
             }
         )
-    completed_shifts = Shift.objects.filter(site__in=sites, status="completed")
+    completed_shifts = Shift.objects.filter(site__in=sites, status="completed")[:5]
 
     # Get pending shift requests across operator's sites
     pending_requests = ShiftRequest.objects.filter(
         shift__site__in=sites, status="pending"
-    ).select_related("staff", "shift", "shift__site")
+    ).select_related("staff", "shift", "shift__site")[:5]
 
     context = {
         "operator": operator,
@@ -643,3 +643,33 @@ def invite_staff_to_shift(request, shift_id, staff_id):
     messages.success(request, f"{staff.user.username} has been invited to this shift.")
 
     return redirect("find_staff_for_shift", shift_id=shift.id)
+
+
+@login_required
+@require_http_methods(["POST"])
+def cancel_shift_booking(request, shift_id):
+    try:
+        operator = Operator.objects.get(user=request.user)
+    except Operator.DoesNotExist:
+        return redirect("register")
+
+    shift = get_object_or_404(
+        Shift,
+        id=shift_id,
+        site__in=operator.sites.all(),
+        status="confirmed",
+    )
+
+    accepted_request = shift.applications.filter(status="accepted").first()
+
+    if accepted_request:
+        accepted_request.status = "cancelled"
+        accepted_request.responded_at = datetime.now()
+        accepted_request.save()
+
+    shift.status = "open"
+    shift.save()
+
+    messages.success(request, "Booking cancelled. Shift is now open again.")
+
+    return redirect("operator_dashboard")

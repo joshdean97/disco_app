@@ -65,4 +65,9 @@ urlpatterns = [
         disco_views.mark_shift_completed,
         name="mark_shift_completed",
     ),
+    path(
+        "operator/shifts/<int:shift_id>/cancel/",
+        disco_views.cancel_shift_booking,
+        name="cancel_shift_booking",
+    ),
 ]
