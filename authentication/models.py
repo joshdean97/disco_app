@@ -33,15 +33,59 @@ class Staff(models.Model):
 
     @property
     def disco_tier(self):
-        if self.disco_rank >= 90:
+        rank = self.disco_rank
+
+        if rank >= 90:
             return "Platinum"
-        elif self.disco_rank >= 80:
+        elif rank >= 80:
             return "Gold"
-        elif self.disco_rank >= 70:
+        elif rank >= 70:
             return "Silver"
-        elif self.disco_rank >= 60:
+        elif rank >= 55:
             return "Bronze"
-        return "Building"
+        return "New"
+
+    @property
+    def disco_rank(self):
+        score = 70
+
+        # Completed shifts
+        completed_count = self.shift_requests.filter(status="completed").count()
+        score += completed_count * 3
+
+        # Accepted shifts
+        accepted_count = self.shift_requests.filter(status="accepted").count()
+        score += accepted_count * 2
+
+        # Pending/applying shows activity, but don't over-reward it
+        pending_count = self.shift_requests.filter(status="pending").count()
+        score += min(pending_count, 3)
+
+        # Availability improves trust
+        if self.availability_slots.exists():
+            score += 5
+
+        # Profile completeness
+        if self.primary_role and self.primary_role != "not set":
+            score += 3
+
+        if self.bio:
+            score += 3
+
+        if self.year_started:
+            score += 2
+
+        # Penalise bad signals
+        declined_count = self.shift_requests.filter(status="declined").count()
+        score -= declined_count * 2
+
+        cancelled_count = self.shift_requests.filter(status="cancelled").count()
+        score -= cancelled_count * 5
+
+        no_show_count = self.shift_requests.filter(status="no_show").count()
+        score -= no_show_count * 12
+
+        return max(0, min(score, 100))
 
     @property
     def full_name(self):

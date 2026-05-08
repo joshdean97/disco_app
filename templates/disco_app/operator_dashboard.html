@@ -182,14 +182,13 @@
   <span>DiscoRank</span>
 
   <strong>
-    {{ req.staff.disco_rank|default:"70" }}
+    {{ item.accepted_request.staff.disco_rank }}
   </strong>
 
   <em>
-    {{ req.staff.disco_tier|default:"Silver" }}
+    {{ item.accepted_request.staff.disco_tier }}
   </em>
-</div>              {% else %}
-              <p>Confirmed, but no accepted worker found.</p>
+</div>              <p>Confirmed, but no accepted worker found.</p>
               {% endif %}
             </div>
 
@@ -242,8 +241,8 @@
 
           <div class="rank-pill">
             <span>DiscoRank</span>
-            <strong>{{ req.staff.disco_rank|default:"70" }}</strong>
-            <em>{{ req.staff.disco_tier|default:"Silver" }}</em>
+            <strong>{{ req.staff.disco_rank }}</strong>
+            <em>{{ req.staff.disco_tier }}</em>
           </div>
         </div>
 

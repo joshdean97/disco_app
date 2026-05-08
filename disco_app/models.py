@@ -96,6 +96,7 @@ class ShiftRequest(models.Model):
         ("declined", "Declined"),
         ("completed", "Completed"),
         ("cancelled", "Cancelled"),
+        ("no_show", "No Show"),
     ]
 
     SOURCE_CHOICES = [

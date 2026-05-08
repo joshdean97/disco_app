@@ -8,6 +8,7 @@ from .forms import ShiftForm, SiteForm
 from django.contrib import messages
 from .helpers import shift_times_overlap, calculate_reliability
 from geopy.distance import geodesic
+from django.utils import timezone
 
 
 @login_required
@@ -99,7 +100,7 @@ def browse_shifts(request):
 
     shifts = Shift.objects.filter(status="open").select_related("site")
 
-    today = datetime.now().date()
+    today = timezone.now().date()
     shifts = shifts.filter(date__gte=today, date__lte=today + timedelta(days=14))
 
     city = request.GET.get("city")
@@ -293,7 +294,9 @@ def respond_to_request(request, request_id):
     sr = get_object_or_404(
         ShiftRequest, id=request_id, shift__site__in=operator.sites.all()
     )
+
     action = request.POST.get("action")
+    now = timezone.now()
 
     if action == "accept":
         if sr.shift.status != "open":
@@ -301,7 +304,7 @@ def respond_to_request(request, request_id):
             return redirect("operator_dashboard")
 
         sr.status = "accepted"
-        sr.responded_at = datetime.now()
+        sr.responded_at = now
         sr.save()
 
         sr.shift.status = "confirmed"
@@ -312,19 +315,19 @@ def respond_to_request(request, request_id):
             status="pending",
         ).exclude(id=sr.id).update(
             status="declined",
-            responded_at=datetime.now(),
+            responded_at=now,
         )
 
         messages.success(
-            request, f"{sr.staff.user.username} has been accepted for this shift."
+            request, f"{sr.staff.full_name} has been accepted for this shift."
         )
 
     elif action == "decline":
         sr.status = "declined"
-        sr.responded_at = datetime.now()
+        sr.responded_at = now
         sr.save()
 
-        messages.info(request, f"{sr.staff.user.username} has been declined.")
+        messages.info(request, f"{sr.staff.full_name} has been declined.")
 
     return redirect("operator_dashboard")
 
@@ -366,7 +369,7 @@ def respond_to_invite(request, request_id):
                 return redirect("staff_dashboard")
 
         sr.status = "accepted"
-        sr.responded_at = datetime.now()
+        sr.responded_at = timezone.now()
         sr.save()
 
         sr.shift.status = "confirmed"
@@ -377,14 +380,14 @@ def respond_to_invite(request, request_id):
             status="pending",
         ).exclude(id=sr.id).update(
             status="declined",
-            responded_at=datetime.now(),
+            responded_at=timezone.now(),
         )
 
         messages.success(request, "You accepted the shift.")
 
     elif action == "decline":
         sr.status = "declined"
-        sr.responded_at = datetime.now()
+        sr.responded_at = timezone.now()
         sr.save()
 
         messages.info(request, "You declined the shift.")
@@ -545,7 +548,7 @@ def mark_shift_completed(request, shift_id):
         return redirect("operator_dashboard")
 
     accepted_request.status = "completed"
-    accepted_request.responded_at = datetime.now()
+    accepted_request.responded_at = timezone.now()
     accepted_request.save()
 
     shift.status = "completed"
@@ -688,7 +691,7 @@ def cancel_shift_booking(request, shift_id):
 
     if accepted_request:
         accepted_request.status = "cancelled"
-        accepted_request.responded_at = datetime.now()
+        accepted_request.responded_at = timezone.now()
         accepted_request.save()
 
     shift.status = "open"
