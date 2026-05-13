@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path
+from django.views.generic import TemplateView
 from authentication import views as auth_views
 from disco_app import views as disco_views
 
@@ -71,4 +72,24 @@ urlpatterns = [
         name="cancel_shift_booking",
     ),
     path("staff/skills/", auth_views.manage_skills, name="manage_skills"),
+    path(
+        "terms/",
+        TemplateView.as_view(template_name="legal/terms.html"),
+        name="terms",
+    ),
+    path(
+        "privacy/",
+        TemplateView.as_view(template_name="legal/privacy.html"),
+        name="privacy",
+    ),
+    path(
+        "worker-terms/",
+        TemplateView.as_view(template_name="legal/worker_terms.html"),
+        name="worker_terms",
+    ),
+    path(
+        "operator-terms/",
+        TemplateView.as_view(template_name="legal/operator_terms.html"),
+        name="operator_terms",
+    ),
 ]

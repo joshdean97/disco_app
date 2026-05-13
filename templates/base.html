@@ -40,4 +40,33 @@
             {% endblock %}
     </main>
 </body>
+<footer class="site-footer">
+  <div class="footer-container">
+
+    <div class="footer-brand">
+      <h3>🕺 Disco</h3>
+      <p>
+        Flexible hospitality staffing for venues and workers.
+      </p>
+    </div>
+
+    <div class="footer-links">
+      <div>
+        <h4>Platform</h4>
+        <a href="/">Home</a>
+        <a href="/login/">Login</a>
+        <a href="/register/">Register</a>
+      </div>
+
+      <div>
+        <h4>Legal</h4>
+        <a href="{% url 'terms' %}">Terms of Service</a>
+        <a href="{% url 'privacy' %}">Privacy Policy</a>
+        <a href="{% url 'worker_terms' %}">Worker Terms</a>
+        <a href="{% url 'operator_terms' %}">Operator Terms</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
 </html>
