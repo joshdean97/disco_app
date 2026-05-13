@@ -1,8 +1,14 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Staff, Operator, Availability
-from .forms import StaffRegistrationForm, OperatorRegistrationForm, AvailabilityForm
+from .forms import (
+    StaffRegistrationForm,
+    OperatorRegistrationForm,
+    AvailabilityForm,
+    StaffSkillsForm,
+)
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
 
@@ -139,3 +145,20 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return redirect("home")
+
+
+@login_required
+def manage_skills(request):
+    staff = Staff.objects.get(user=request.user)
+    if request.method == "POST":
+        form = StaffSkillsForm(request.POST, instance=staff)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Skills updated successfully.")
+            return redirect("staff_dashboard")
+    else:
+        form = StaffSkillsForm(instance=staff)
+
+    return render(
+        request, "authentication/manage_skills.html", {"form": form, "staff": staff}
+    )

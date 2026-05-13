@@ -31,6 +31,8 @@ class Staff(models.Model):
     late_arrivals = models.PositiveIntegerField(default=0)
     positive_reviews = models.PositiveIntegerField(default=0)
 
+    skills = models.ManyToManyField("disco_app.Skill", blank=True)
+
     @property
     def disco_tier(self):
         rank = self.disco_rank

@@ -70,4 +70,5 @@ urlpatterns = [
         disco_views.cancel_shift_booking,
         name="cancel_shift_booking",
     ),
+    path("staff/skills/", auth_views.manage_skills, name="manage_skills"),
 ]

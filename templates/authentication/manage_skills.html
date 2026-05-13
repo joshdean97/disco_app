@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<section class="dashboard-page">
+  <div class="dashboard-container">
+
+    <div class="dashboard-header">
+      <div>
+        <p class="eyebrow">Staff Profile</p>
+        <h1>Manage Your Skills</h1>
+        <p class="subtitle">
+          Select the skills operators should see when considering you for shifts.
+        </p>
+      </div>
+
+      <a href="{% url 'staff_dashboard' %}" class="btn-primary">Back to Dashboard</a>
+    </div>
+
+    <div class="panel">
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="skills-grid">
+          {{ form.skills }}
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top: 1rem;">
+          Save Skills
+        </button>
+      </form>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

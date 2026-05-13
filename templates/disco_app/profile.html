@@ -17,6 +17,26 @@
             • Experience since {{ staff_member.year_started }}
           {% endif %}
         </p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin:12px 0;">
+  {% for skill in staff_member.skills.all %}
+    <span style="
+      display:inline-flex;
+      background:#e0f7ff;
+      color:#075985;
+      border:1px solid #bae6fd;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:800;
+      line-height:1;
+      white-space:nowrap;
+    ">
+      {{ skill.name }}
+    </span>
+  {% empty %}
+    <span style="color:#64748b;">No skills added yet</span>
+  {% endfor %}
+</div>
       </div>
 
       <a href="{% url 'operator_dashboard' %}" class="btn-secondary">

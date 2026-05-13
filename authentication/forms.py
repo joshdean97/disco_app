@@ -65,3 +65,12 @@ class AvailabilityForm(forms.ModelForm):
                 attrs={"type": "time", "class": "form-control"}
             ),
         }
+
+
+class StaffSkillsForm(forms.ModelForm):
+    class Meta:
+        model = Staff
+        fields = ["skills"]
+        widgets = {
+            "skills": forms.CheckboxSelectMultiple(),
+        }

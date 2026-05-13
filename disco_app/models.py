@@ -137,3 +137,11 @@ class ShiftRequest(models.Model):
 
     def __str__(self):
         return f"{self.staff.user.username} → {self.shift} ({self.status})"
+
+
+class Skill(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    category = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return self.name
