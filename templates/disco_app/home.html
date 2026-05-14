@@ -1,78 +1,528 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block content %}
 
+{% block content %}
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 
-<section class="dashboard-page">
-  <div class="dashboard-container">
+<style>
+  .landing-page {
+    background: #f4f7fb;
+    min-height: 100vh;
+    padding: 2rem 1rem 5rem;
+  }
 
-    <div class="dashboard-header">
-      <div>
-        <p class="eyebrow">Hospitality Staffing</p>
-        <h1>Flexible shifts. Trusted workers. Less chaos.</h1>
-        <p class="subtitle">
-          Disco helps venues find available hospitality staff based on role, availability, distance, and reliability.
+  .landing-container {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #081120 0%, #0f172a 50%, #111827 100%);
+    border-radius: 32px;
+    padding: 4rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(2, 8, 23, 0.28);
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    background: rgba(0, 217, 255, 0.08);
+    border-radius: 50%;
+    top: -180px;
+    right: -120px;
+    filter: blur(20px);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 2.5rem;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .eyebrow {
+    color: #00d9ff;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 6vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+    margin-bottom: 1.4rem;
+    max-width: 700px;
+  }
+
+  .hero p {
+    color: #cbd5e1;
+    font-size: 1.08rem;
+    line-height: 1.7;
+    max-width: 620px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1.4rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 800;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background: #00d9ff;
+    color: #03121a;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(0, 217, 255, 0.35);
+  }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.08);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.14);
+  }
+
+  .hero-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .mock-shift {
+    background: white;
+    color: #0f172a;
+    border-radius: 18px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .mock-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .mock-role {
+    font-weight: 800;
+  }
+
+  .mock-rate {
+    color: #0891b2;
+    font-weight: 800;
+  }
+
+  .mock-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+
+  .tag {
+    background: #f1f5f9;
+    padding: 0.45rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .trust-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .trust-card {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  }
+
+  .trust-card span {
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+
+  .trust-card h3 {
+    margin: 0.9rem 0;
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: #0f172a;
+  }
+
+  .trust-card p {
+    color: #64748b;
+    line-height: 1.6;
+  }
+
+  .section {
+    margin-top: 1.5rem;
+    background: white;
+    border-radius: 28px;
+    padding: 2.5rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: #0f172a;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-subtitle {
+    color: #64748b;
+    max-width: 700px;
+    line-height: 1.7;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .step-card {
+    background: #f8fafc;
+    border-radius: 24px;
+    padding: 2rem;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease;
+  }
+
+  .step-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .step-number {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #00d9ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    margin-bottom: 1rem;
+  }
+
+  .step-card h3 {
+    margin-bottom: 0.8rem;
+    font-size: 1.3rem;
+    color: #0f172a;
+  }
+
+  .step-card p {
+    color: #64748b;
+    line-height: 1.6;
+  }
+
+  .difference-section {
+    background: linear-gradient(135deg, #0f172a, #111827);
+    color: white;
+  }
+
+  .difference-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .difference-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 22px;
+    padding: 1.5rem;
+  }
+
+  .difference-card h3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .difference-card p {
+    color: #cbd5e1;
+    line-height: 1.6;
+  }
+
+  .cta-section {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .cta-section h2 {
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.06em;
+    color: #0f172a;
+    margin-bottom: 1rem;
+  }
+
+  .cta-section p {
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    color: #64748b;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      padding: 2rem;
+    }
+
+    .hero-grid,
+    .trust-row,
+    .steps-grid,
+    .difference-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+    }
+
+    .section {
+      padding: 1.5rem;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+    }
+  }
+</style>
+
+<section class="landing-page">
+  <div class="landing-container">
+
+    <section class="hero">
+      <div class="hero-grid">
+
+        <div>
+          <p class="eyebrow">Built for independent hospitality</p>
+
+          <h1>
+            Flexible shifts.<br>
+            Trusted workers.<br>
+            Less chaos.
+          </h1>
+
+          <p>
+            Disco helps restaurants, bars, cafés, and venues find reliable hospitality staff without agency roulette. Post shifts, review applicants, and build a trusted team.
+          </p>
+
+          <div class="hero-actions">
+            <a href="/register/" class="btn-primary">Find Staff</a>
+            <a href="/register/" class="btn-secondary">Start Working</a>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="mock-shift">
+            <div class="mock-top">
+              <div>
+                <div class="mock-role">Bartender</div>
+                <small>Tonight • Leeds</small>
+              </div>
+              <div class="mock-rate">£14/hr</div>
+            </div>
+
+            <strong>3 matched workers available</strong>
+
+            <div class="mock-tags">
+              <div class="tag">Available</div>
+              <div class="tag">4.9 Reliability</div>
+              <div class="tag">2km away</div>
+            </div>
+          </div>
+
+          <div class="mock-shift">
+            <div class="mock-top">
+              <div>
+                <div class="mock-role">Waiting Staff</div>
+                <small>Friday • City Centre</small>
+              </div>
+              <div class="mock-rate">£13/hr</div>
+            </div>
+
+            <strong>Shift filled in 14 minutes</strong>
+
+            <div class="mock-tags">
+              <div class="tag">Confirmed</div>
+              <div class="tag">DiscoRank 92</div>
+              <div class="tag">Repeat Worker</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="trust-row">
+      <div class="trust-card">
+        <span>For venues</span>
+        <h3>Fill shifts faster</h3>
+        <p>
+          Post shifts in under a minute and review workers based on availability, reliability, and role fit.
         </p>
-
-        <div class="header-actions" style="margin-top: 1.5rem;">
-          <a href="{% url 'register' %}" class="btn-primary">Get Started</a>
-          <a href="{% url 'login' %}" class="btn-secondary">Login</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-label">For Venues</span>
-        <strong>Post</strong>
-        <p>Create shifts and invite matched workers.</p>
       </div>
 
-      <div class="stat-card">
-        <span class="stat-label">For Staff</span>
-        <strong>Work</strong>
-        <p>Set your availability and accept shifts that fit.</p>
+      <div class="trust-card">
+        <span>For staff</span>
+        <h3>Work that fits your life</h3>
+        <p>
+          Pick up flexible hospitality shifts around your schedule without endless agency calls.
+        </p>
       </div>
 
-      <div class="stat-card">
-        <span class="stat-label">Smart Matching</span>
-        <strong>Match</strong>
-        <p>Rank staff by role, distance, availability, and reliability.</p>
+      <div class="trust-card">
+        <span>Smart matching</span>
+        <h3>Find people who show up</h3>
+        <p>
+          DiscoRank rewards reliable workers so good staff stand out over time.
+        </p>
       </div>
-    </div>
+    </section>
 
-    <div class="panel">
-      <div class="panel-header">
-        <h2>Built for hospitality shifts that move fast</h2>
-      </div>
+    <section class="section">
+      <p class="eyebrow">How Disco Works</p>
+      <h2 class="section-title">Built for hospitality shifts that move fast</h2>
+      <p class="section-subtitle">
+        Hospitality doesn’t wait around. Disco keeps the process simple, fast, and mobile-friendly so operators can fill shifts quickly and staff can get booked without friction.
+      </p>
 
-      <div class="shift-list">
-        <div class="shift-item">
-          <div>
-            <strong>Operators find better-fit workers</strong>
-            <p>No more random agency roulette. See who is available, nearby, and reliable.</p>
-          </div>
-          <span class="badge accepted">Operator</span>
+      <div class="steps-grid">
+
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Post a shift</h3>
+          <p>
+            Create a shift in under 60 seconds with role, pay, and timing details.
+          </p>
         </div>
 
-        <div class="shift-item">
-          <div>
-            <strong>Staff build a visible reputation</strong>
-            <p>Completed shifts improve trust and help good workers stand out.</p>
-          </div>
-          <span class="badge accepted">Staff</span>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>Review matched workers</h3>
+          <p>
+            See who’s available nearby, check reliability, and invite the best fit.
+          </p>
         </div>
 
-        <div class="shift-item">
-          <div>
-            <strong>Every shift improves the marketplace</strong>
-            <p>Confirmed and completed shifts feed into worker reliability over time.</p>
-          </div>
-          <span class="badge pending">MVP</span>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>Confirm and go</h3>
+          <p>
+            Staff accept directly in the app so everyone knows who’s working.
+          </p>
         </div>
+
       </div>
-    </div>
+    </section>
+
+    <section class="section difference-section">
+      <p class="eyebrow">Why Disco</p>
+      <h2 class="section-title" style="color:white;">
+        Built for independent hospitality
+      </h2>
+
+      <p class="section-subtitle" style="color:#cbd5e1;">
+        Disco isn’t built for warehouses, call centres, or giant enterprise chains. It’s designed for restaurants, bars, cafés, and hospitality teams that move fast.
+      </p>
+
+      <div class="difference-grid">
+
+        <div class="difference-card">
+          <h3>Made by hospitality people</h3>
+          <p>
+            Built by people who understand last-minute no-shows, Friday night pressure, and rota chaos.
+          </p>
+        </div>
+
+        <div class="difference-card">
+          <h3>Trust over spam applications</h3>
+          <p>
+            Reliable workers build reputation over time instead of disappearing into giant agency pools.
+          </p>
+        </div>
+
+        <div class="difference-card">
+          <h3>Mobile-first workflow</h3>
+          <p>
+            Most staff discover shifts on break, on the bus, or after service. Disco is built around that reality.
+          </p>
+        </div>
+
+        <div class="difference-card">
+          <h3>Fast enough for real service</h3>
+          <p>
+            Because hospitality staffing software shouldn’t feel like filing taxes.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="section cta-section">
+      <p class="eyebrow">Join Disco</p>
+      <h2>
+        Hospitality staffing without the chaos.
+      </h2>
+
+      <p>
+        Whether you’re trying to fill tonight’s rota or pick up extra shifts this week, Disco helps hospitality teams move faster.
+      </p>
+
+      <div class="hero-actions" style="justify-content:center;">
+        <a href="/register/" class="btn-primary">Create Account</a>
+        <a href="/login/" class="btn-secondary" style="color:#0f172a; border:1px solid #d1d5db; background:white;">Login</a>
+      </div>
+    </section>
 
   </div>
 </section>
