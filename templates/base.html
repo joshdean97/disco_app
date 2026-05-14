@@ -10,34 +10,35 @@
 </head>
 
 <body>
-  <nav class="site-nav">
-    <div class="nav-container">
-<a href="/" class="nav-brand">
-  Disco
-</a>      <div class="nav-links">
-        {% if user.is_authenticated %}
-          {% if user|is_operator %}
-            <a href="/">Dashboard</a>
-            <a href="/operator/shifts/post/">Post Shift</a>
-            <a href="/operator/sites/">Manage Venues</a>
-          {% elif user|is_staffuser %}
-            <a href="/">Dashboard</a>
-            <a href="/shifts/">Browse Shifts</a>
-            <a href="/availability/">My Availability</a>
-            <a href="{% url 'my_profile' %}">Profile</a>
-          {% endif %}
-        {% else %}
-          <a href="/">Home</a>
-          <a href="{% url 'login' %}">Login</a>
-          <a href="{% url 'register' %}" class="nav-cta">Register</a>
-        {% endif %}
-      </div>
+<nav class="site-nav">
+  <div class="nav-container">
+    <a href="/" class="nav-brand">Disco</a>
 
+    <button class="nav-toggle" type="button" aria-label="Open menu">
+      ☰
+    </button>
+
+    <div class="nav-links" id="navLinks">
       {% if user.is_authenticated %}
+        {% if user|is_operator %}
+          <a href="/">Dashboard</a>
+          <a href="/operator/shifts/post/">Post Shift</a>
+          <a href="/operator/sites/">Manage Venues</a>
+        {% elif user|is_staffuser %}
+          <a href="/">Dashboard</a>
+          <a href="/shifts/">Browse Shifts</a>
+          <a href="/availability/">My Availability</a>
+          <a href="{% url 'my_profile' %}">Profile</a>
+        {% endif %}
         <a href="/logout/" class="nav-logout">Logout</a>
+      {% else %}
+        <a href="/">Home</a>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}" class="nav-cta">Register</a>
       {% endif %}
     </div>
-  </nav>
+  </div>
+</nav>
 
   <main>
     {% block content %}
@@ -69,5 +70,16 @@
       </div>
     </div>
   </footer>
+
+<script>
+  const navToggle = document.querySelector(".nav-toggle");
+  const navLinks = document.querySelector(".nav-links");
+
+  if (navToggle && navLinks) {
+    navToggle.addEventListener("click", function () {
+      navLinks.classList.toggle("open");
+    });
+  }
+</script>
 </body>
 </html>
