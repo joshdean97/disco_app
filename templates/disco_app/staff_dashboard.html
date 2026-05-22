@@ -67,6 +67,18 @@
       <span class="check-subtitle">Help operators quickly understand your experience</span>
     </div>
   </a>
+  <a href="/profile/" class="check-item {% if profile_steps.postcode %}done{% endif %}">
+  <div class="check-icon">
+    {% if profile_steps.postcode %}✓{% else %}○{% endif %}
+  </div>
+
+  <div class="check-content">
+    <span class="check-title">Add your postcode</span>
+    <span class="check-subtitle">
+      Get matched with nearby venues and shifts
+    </span>
+  </div>
+</a>
 
   <a href="/availability/" class="check-item {% if profile_steps.availability %}done{% endif %}">
     <div class="check-icon">{% if profile_steps.availability %}✓{% else %}○{% endif %}</div>

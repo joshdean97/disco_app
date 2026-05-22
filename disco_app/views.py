@@ -79,6 +79,7 @@ def staff_dashboard(request):
         "bio": bool(staff.bio),
         "profile_role": bool(staff.primary_role),
         "first_application": ShiftRequest.objects.filter(staff=staff).exists(),
+        "postcode": bool(staff.postcode),
     }
 
     completed_steps = sum(profile_steps.values())
