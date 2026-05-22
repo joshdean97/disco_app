@@ -127,7 +127,6 @@ body {
     color: #03121a !important;
   }
 }
-
 main {
   min-height: calc(100vh - 72px);
 }

@@ -29,7 +29,6 @@
       <div class="shift-list">
         {% for req in requests %}
           <div class="shift-item applicant-card">
-
             <div class="applicant-info">
               <strong>{{ req.staff.full_name }}</strong>
               <p>Applied for {{ shift }}</p>
@@ -41,38 +40,11 @@
               </div>
             </div>
 
-            <div class="button-row">
-
-              <form method="post" action="{% url 'respond_to_request' req.id %}">
-                {% csrf_token %}
-
-                <button name="action" value="accept" class="btn-accept">
-                  Accept
-                </button>
-
-                <button name="action" value="decline" class="btn-decline">
-                  Decline
-                </button>
-              </form>
-
-              {% if req.staff.id in favourite_staff_ids %}
-                <form method="post" action="{% url 'unfavourite_staff' req.staff.id %}">
-                  {% csrf_token %}
-                  <button class="btn-secondary" type="submit">
-                    Remove from roster
-                  </button>
-                </form>
-              {% else %}
-                <form method="post" action="{% url 'favourite_staff' req.staff.id %}">
-                  {% csrf_token %}
-                  <button class="btn-primary" type="submit">
-                    Save to roster
-                  </button>
-                </form>
-              {% endif %}
-
-            </div>
-
+            <form method="post" action="{% url 'respond_to_request' req.id %}" class="button-row">
+              {% csrf_token %}
+              <button name="action" value="accept" class="btn-accept">Accept</button>
+              <button name="action" value="decline" class="btn-decline">Decline</button>
+            </form>
           </div>
         {% empty %}
           <div class="empty-state">

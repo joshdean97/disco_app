@@ -62,7 +62,8 @@
   color: #03121a;
   text-decoration: none;
   font-weight: 800;
-  padding: 0.9rem 1.25rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
   border-radius: 999px;
   white-space: nowrap;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -78,8 +79,8 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
   margin-bottom: 1rem;
+  align-items: stretch;
 }
-
 .stat-card,
 .panel {
   background: white;
@@ -90,6 +91,15 @@
 
 .stat-card {
   padding: 1.4rem;
+  min-height: 140px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dashboard-grid > .panel {
+  align-self: start;
 }
 
 .stat-label {
@@ -116,18 +126,26 @@
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   gap: 1rem;
-  align-items: start;
+  align-items: stretch;
+}
+.panel {
+  padding: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+}
+.trusted-panel {
+  min-height: 220px;
+  border: 2px solid #00d9ff;
+  box-shadow: 0 0 0 1px rgba(0,217,255,0.15);
 }
 
-.panel {
-  min-width: 0;
-  padding: 1.5rem;
-}
 
 .panel-scroll {
   max-height: 620px;
   overflow-y: auto;
   padding-right: 0.25rem;
+  flex:1;
 }
 
 .panel-scroll::-webkit-scrollbar {
@@ -155,6 +173,13 @@
 .shift-list {
   display: grid;
   gap: 0.85rem;
+}
+.empty-state {
+  min-height: 120px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .shift-item {
@@ -669,9 +694,6 @@
   font-size: 0.9rem;
 }
 
-.dashboard-grid {
-  align-items: start;
-}
 
 .shift-item {
   max-width: 100%;
@@ -908,6 +930,10 @@
 
 .skills-grid input {
   accent-color: #00d9ff;
+}
+
+.dashboard-grid {
+  align-items: start;
 }
 
 /* =========================

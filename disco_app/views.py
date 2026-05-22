@@ -64,6 +64,16 @@ def staff_dashboard(request):
     accepted_requests = staff.shift_requests.filter(status="accepted")
     completed_requests = staff.shift_requests.filter(status="completed")
 
+    estimated_earnings = 0
+
+    for req in completed_requests:
+        start = datetime.combine(datetime.today(), req.shift.start_time)
+        end = datetime.combine(datetime.today(), req.shift.end_time)
+
+        hours = (end - start).seconds / 3600
+
+        estimated_earnings += float(req.shift.hourly_rate) * hours
+
     profile_steps = {
         "availability": staff.availability_slots.exists(),
         "bio": bool(staff.bio),
@@ -73,6 +83,8 @@ def staff_dashboard(request):
 
     completed_steps = sum(profile_steps.values())
     completion_percentage = int((completed_steps / len(profile_steps)) * 100)
+
+    completed_requests = staff.shift_requests.filter(status="completed")
 
     context = {
         "staff": staff,
@@ -85,6 +97,7 @@ def staff_dashboard(request):
         "accepted_count": accepted_requests.count(),
         "profile_steps": profile_steps,
         "completion_percentage": completion_percentage,
+        "estimated_earnings": round(estimated_earnings, 2),
     }
 
     return render(request, "disco_app/staff_dashboard.html", context)
@@ -212,6 +225,25 @@ def operator_dashboard(request):
     )
 
     trusted_staff = Staff.objects.filter(favourited_by__operator=operator).distinct()
+    completed_shift_data = []
+
+    for shift in completed_shifts:
+        completed_request = (
+            shift.applications.filter(status="completed")
+            .select_related("staff", "staff__user")
+            .first()
+        )
+
+        completed_shift_data.append(
+            {
+                "shift": shift,
+                "completed_request": completed_request,
+            }
+        )
+
+    favourite_staff_ids = FavouriteStaff.objects.filter(operator=operator).values_list(
+        "staff_id", flat=True
+    )
 
     context = {
         "operator": operator,
@@ -223,11 +255,12 @@ def operator_dashboard(request):
         "pending_count": pending_requests.count(),
         "open_count": open_shifts.count(),
         "confirmed_shift_data": confirmed_shift_data,
+        "completed_shift_data": completed_shift_data,
+        "favourite_staff_ids": favourite_staff_ids,
         "profile_steps": profile_steps,
         "completion_percentage": completion_percentage,
         "trusted_staff": trusted_staff,
     }
-
     return render(request, "disco_app/operator_dashboard.html", context)
 
 

@@ -1,94 +1,87 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
 
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
-
 <section class="dashboard-page">
   <div class="dashboard-container">
+
     <div class="dashboard-header">
       <div>
         <p class="eyebrow">Operator Portal</p>
         <h1>Welcome back, {{ operator.full_name }}</h1>
         <p class="subtitle">
-          Post shifts, find workers, manage venues, and book trusted staff using
-          DiscoRank.
+          Post shifts, find workers, manage venues, and book trusted staff using DiscoRank.
         </p>
       </div>
 
       <div class="header-actions">
         <a href="{% url 'post_shift' %}" class="btn-primary">Post Shift</a>
-        <a href="{% url 'manage_sites' %}" class="btn-secondary"
-          >Manage Venues</a
-        >
+        <a href="{% url 'manage_sites' %}" class="btn-secondary">Manage Venues</a>
       </div>
     </div>
+
     {% if completion_percentage == 100 %}
-
-<div class="success-card">
-  <strong>Venue setup complete 🎉</strong>
-  <p>You’re ready to build your trusted Disco crew.</p>
-</div>
-
-{% else %}
-
-<div class="onboarding-card">
-
-  <div class="onboarding-header">
-    <div>
-      <p class="eyebrow">Get Started</p>
-      <h2>Set up your operator profile</h2>
-    </div>
-
-    <div class="completion-ring">
-      {{ completion_percentage }}%
-    </div>
-  </div>
-
-  <div class="checklist">
-
-    <a href="/operator/sites/" class="check-item {% if profile_steps.site %}done{% endif %}">
-      <div class="check-icon">
-        {% if profile_steps.site %}✓{% else %}○{% endif %}
+      <div class="success-card">
+        <strong>Venue setup complete 🎉</strong>
+        <p>You’re ready to build your trusted Disco crew.</p>
       </div>
+    {% else %}
+      <div class="onboarding-card">
+        <div class="onboarding-header">
+          <div>
+            <p class="eyebrow">Get Started</p>
+            <h2>Set up your operator profile</h2>
+          </div>
 
-      <div class="check-content">
-        <span class="check-title">Add your first venue</span>
-        <span class="check-subtitle">
-          Create the venues you want to hire for
-        </span>
+          <div class="completion-ring">
+            {{ completion_percentage }}%
+          </div>
+        </div>
+
+        <div class="checklist">
+          <a href="/operator/sites/" class="check-item {% if profile_steps.site %}done{% endif %}">
+            <div class="check-icon">
+              {% if profile_steps.site %}✓{% else %}○{% endif %}
+            </div>
+
+            <div class="check-content">
+              <span class="check-title">Add your first venue</span>
+              <span class="check-subtitle">
+                Create the venues you want to hire for
+              </span>
+            </div>
+          </a>
+
+          <a href="/operator/shifts/post/" class="check-item {% if profile_steps.shift %}done{% endif %}">
+            <div class="check-icon">
+              {% if profile_steps.shift %}✓{% else %}○{% endif %}
+            </div>
+
+            <div class="check-content">
+              <span class="check-title">Post your first shift</span>
+              <span class="check-subtitle">
+                Start attracting hospitality staff nearby
+              </span>
+            </div>
+          </a>
+
+          <a href="/operator/" class="check-item {% if profile_steps.requests %}done{% endif %}">
+            <div class="check-icon">
+              {% if profile_steps.requests %}✓{% else %}○{% endif %}
+            </div>
+
+            <div class="check-content">
+              <span class="check-title">Review shift requests</span>
+              <span class="check-subtitle">
+                Accept or decline applicants to build your trusted crew
+              </span>
+            </div>
+          </a>
+        </div>
       </div>
-    </a>
+    {% endif %}
 
-    <a href="/operator/shifts/post/" class="check-item {% if profile_steps.shift %}done{% endif %}">
-      <div class="check-icon">
-        {% if profile_steps.shift %}✓{% else %}○{% endif %}
-      </div>
-
-      <div class="check-content">
-        <span class="check-title">Post your first shift</span>
-        <span class="check-subtitle">
-          Start attracting hospitality staff nearby
-        </span>
-      </div>
-    </a>
-
-    <a href="/operator/" class="check-item {% if profile_steps.requests %}done{% endif %}">
-      <div class="check-icon">
-        {% if profile_steps.requests %}✓{% else %}○{% endif %}
-      </div>
-
-      <div class="check-content">
-        <span class="check-title">Review shift requests</span>
-        <span class="check-subtitle">
-          Accept or decline applicants to build your trusted crew
-        </span>
-      </div>
-    </a>
-
-  </div>
-
-</div>
-
-{% endif %}
     <div class="stats-grid">
       <div class="stat-card">
         <span class="stat-label">Open Shifts</span>
@@ -112,6 +105,7 @@
     </div>
 
     <div class="dashboard-grid">
+
       <div class="panel">
         <div class="panel-header">
           <h2>Open Shifts</h2>
@@ -119,37 +113,31 @@
 
         <div class="shift-list panel-scroll">
           {% for shift in open_shifts %}
-          <div class="shift-item">
-            <div>
-              <strong>{{ shift }}</strong>
-              <p>Live and accepting worker requests.</p>
-            </div>
+            <div class="shift-item">
+              <div>
+                <strong>{{ shift }}</strong>
+                <p>Live and accepting worker requests.</p>
+              </div>
 
-            <div class="button-row">
-              <a
-                href="{% url 'manage_shift_requests' shift.id %}"
-                class="btn-small"
-              >
-                View Requests
-              </a>
+              <div class="button-row">
+                <a href="{% url 'manage_shift_requests' shift.id %}" class="btn-small">
+                  View Requests
+                </a>
 
-              <a
-                href="{% url 'find_staff_for_shift' shift.id %}"
-                class="btn-small"
-              >
-                Find Staff
-              </a>
+                <a href="{% url 'find_staff_for_shift' shift.id %}" class="btn-small">
+                  Find Staff
+                </a>
+              </div>
             </div>
-          </div>
           {% empty %}
-          <div class="empty-state">
-  <h3>No active shifts</h3>
-  <p>Post your first shift to start receiving applications.</p>
+            <div class="empty-state">
+              <h3>No active shifts</h3>
+              <p>Post your first shift to start receiving applications.</p>
 
-  <a href="/operator/shifts/post/" class="btn-primary">
-    Post Shift
-  </a>
-</div>
+              <a href="/operator/shifts/post/" class="btn-primary">
+                Post Shift
+              </a>
+            </div>
           {% endfor %}
         </div>
       </div>
@@ -159,150 +147,151 @@
           <h2>Confirmed Shifts</h2>
         </div>
 
-        <div class="shift-list">
+        <div class="shift-list panel-scroll">
           {% for item in confirmed_shift_data %}
-          <div class="shift-item applicant-card">
-            <div class="applicant-info">
-              <strong>{{ item.shift }}</strong>
+            <div class="shift-item applicant-card">
+              <div class="applicant-info">
+                <strong>{{ item.shift }}</strong>
 
-              {% if item.accepted_request %}
-              <p>
-                {{ item.accepted_request.staff.full_name }} is booked for this
-                shift.
-              </p>
+                {% if item.accepted_request %}
+                  <p>
+                    {{ item.accepted_request.staff.full_name }} is booked for this shift.
+                  </p>
 
-              <p class="shift-meta">
-  £{{ item.shift.hourly_rate }} per hour •
-  {{ item.shift.date|date:"l j F" }} •
-  {{ item.shift.start_time|time:"H:i" }} –
-  {{ item.shift.end_time|time:"H:i" }}
-</p>
+                  <p class="shift-meta">
+                    £{{ item.shift.hourly_rate }} per hour •
+                    {{ item.shift.date|date:"l j F" }} •
+                    {{ item.shift.start_time|time:"H:i" }} –
+                    {{ item.shift.end_time|time:"H:i" }}
+                  </p>
 
-<div class="rank-pill">
-  <span>DiscoRank</span>
+                  <div class="rank-pill">
+                    <span>DiscoRank</span>
+                    <strong>{{ item.accepted_request.staff.disco_rank }}</strong>
+                    <em>{{ item.accepted_request.staff.disco_tier }}</em>
+                  </div>
+                {% else %}
+                  <p>Confirmed, but no accepted worker found.</p>
+                {% endif %}
+              </div>
 
-  <strong>
-    {{ item.accepted_request.staff.disco_rank }}
-  </strong>
+              <div class="button-row">
+                {% if item.accepted_request %}
+                  <a href="{% url 'staff_profile' item.accepted_request.staff.id %}" class="btn-small">
+                    View Profile
+                  </a>
+                {% endif %}
 
-  <em>
-    {{ item.accepted_request.staff.disco_tier }}
-  </em>
-</div>              <p>Confirmed, but no accepted worker found.</p>
-              {% endif %}
+                <form method="post" action="{% url 'mark_shift_completed' item.shift.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-accept">
+                    Mark Completed
+                  </button>
+                </form>
+
+                <form method="post" action="{% url 'cancel_shift_booking' item.shift.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-decline">
+                    Cancel Booking
+                  </button>
+                </form>
+              </div>
             </div>
-
-            <div class="button-row">
-              {% if item.accepted_request %}
-              <a
-                href="{% url 'staff_profile' item.accepted_request.staff.id %}"
-                class="btn-small"
-              >
-                View Profile
-              </a>
-              {% endif %}
-
-              <form
-                method="post"
-                action="{% url 'mark_shift_completed' item.shift.id %}"
-              >
-                {% csrf_token %}
-                <button type="submit" class="btn-accept">Mark Completed</button>
-              </form>
-              <form
-                method="post"
-                action="{% url 'cancel_shift_booking' item.shift.id %}"
-              >
-                {% csrf_token %}
-
-                <button type="submit" class="btn-decline">
-                  Cancel Booking
-                </button>
-              </form>
-            </div>
-          </div>
           {% empty %}
-          <div class="empty-state">No confirmed shifts.</div>
+            <div class="empty-state">No confirmed shifts.</div>
           {% endfor %}
         </div>
       </div>
 
-<div class="panel">
-  <div class="panel-header">
-    <h2>Completed Shifts</h2>
-  </div>
-
-  <div class="shift-list panel-scroll">
-    {% for shift in completed_shifts %}
-      <div class="shift-item">
-        <div>
-          <strong>{{ shift }}</strong>
-          <p>Completed and counted toward worker DiscoRank.</p>
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Completed Shifts</h2>
         </div>
 
-        <span class="badge accepted">Completed</span>
+        <div class="shift-list panel-scroll">
+          {% for item in completed_shift_data %}
+            {% if item.completed_request %}
+              <div class="shift-item applicant-card">
+                <div class="applicant-info">
+                  <strong>{{ item.completed_request.staff.full_name }}</strong>
+                  <p>Completed {{ item.shift }}</p>
+
+                  <div class="rank-pill">
+                    <span>DiscoRank</span>
+                    <strong>{{ item.completed_request.staff.disco_rank }}</strong>
+                    <em>{{ item.completed_request.staff.disco_tier }}</em>
+                  </div>
+                </div>
+
+                <div class="button-row">
+                  <a href="{% url 'staff_profile' item.completed_request.staff.id %}" class="btn-small">
+                    View Profile
+                  </a>
+
+                  {% if item.completed_request.staff.id in favourite_staff_ids %}
+                    <span class="badge accepted">⭐ Trusted Staff</span>
+                  {% else %}
+                    <form method="post" action="{% url 'favourite_staff' item.completed_request.staff.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-primary">
+                        Add to Trusted Roster
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% empty %}
+            <div class="empty-state">
+              No completed shifts yet.
+            </div>
+          {% endfor %}
+        </div>
       </div>
-    {% empty %}
-      <div class="empty-state">No completed shifts yet.</div>
-    {% endfor %}
-  </div>
-</div>
 
-<div class="panel">
-  <div class="panel-header">
-    <h2>Trusted Roster</h2>
-  </div>
-
-  <div class="shift-list panel-scroll">
-    {% for staff in trusted_staff %}
-      <div class="shift-item applicant-card">
-
-        <div class="applicant-info">
-          <strong>{{ staff.full_name }}</strong>
-
-          <p>
-            {{ staff.get_primary_role_display }}
-          </p>
-
-          <div class="rank-pill">
-            <span>DiscoRank</span>
-            <strong>{{ staff.disco_rank }}</strong>
-            <em>{{ staff.disco_tier }}</em>
-          </div>
+      <div class="panel trusted-panel">
+        <div class="panel-header">
+          <h2>Trusted Roster</h2>
         </div>
 
-        <div class="button-row">
+        <div class="shift-list panel-scroll">
+          {% for staff in trusted_staff %}
+            <div class="shift-item applicant-card">
+              <div class="applicant-info">
+                <strong>{{ staff.full_name }}</strong>
+                <p>{{ staff.get_primary_role_display }}</p>
 
-          <a
-            href="{% url 'staff_profile' staff.id %}"
-            class="btn-small"
-          >
-            View Profile
-          </a>
+                <div class="rank-pill">
+                  <span>DiscoRank</span>
+                  <strong>{{ staff.disco_rank }}</strong>
+                  <em>{{ staff.disco_tier }}</em>
+                </div>
+              </div>
 
-          <form
-            method="post"
-            action="{% url 'unfavourite_staff' staff.id %}"
-          >
-            {% csrf_token %}
-            <button type="submit" class="btn-decline">
-              Remove
-            </button>
-          </form>
+              <div class="button-row">
+                <a href="{% url 'staff_profile' staff.id %}" class="btn-small">
+                  View Profile
+                </a>
 
+                <form method="post" action="{% url 'unfavourite_staff' staff.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-decline">
+                    Remove
+                  </button>
+                </form>
+              </div>
+            </div>
+          {% empty %}
+            <div class="empty-state">
+              <h3>No trusted staff yet</h3>
+              <p>Add workers after completed shifts.</p>
+            </div>
+          {% endfor %}
         </div>
+      </div>
 
-      </div>
-    {% empty %}
-      <div class="empty-state">
-        <h3>No trusted staff yet</h3>
-        <p>
-          Save reliable workers to quickly rehire them in future.
-        </p>
-      </div>
-    {% endfor %}
-  </div>
-</div>    </div>
+    </div>
+
   </div>
 </section>
 
