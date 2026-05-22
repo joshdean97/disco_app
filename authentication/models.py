@@ -24,7 +24,6 @@ class Staff(models.Model):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
 
-    disco_rank = models.PositiveIntegerField(default=70)
     completed_shifts = models.PositiveIntegerField(default=0)
     cancelled_shifts = models.PositiveIntegerField(default=0)
     no_shows = models.PositiveIntegerField(default=0)
@@ -154,6 +153,22 @@ class Operator(models.Model):
 
         return self.user.username
 
+    def __str__(self):
+        return self.company_name or self.user.username
 
-def __str__(self):
-    return self.company_name or self.user.username
+
+class FavouriteStaff(models.Model):
+    operator = models.ForeignKey(
+        Operator, on_delete=models.CASCADE, related_name="favourite_staff"
+    )
+    staff = models.ForeignKey(
+        Staff, on_delete=models.CASCADE, related_name="favourited_by"
+    )
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("operator", "staff")
+
+    def __str__(self):
+        return f"{self.operator.company_name} likes {self.staff.full_name}"

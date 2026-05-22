@@ -229,87 +229,80 @@
 
 <div class="panel">
   <div class="panel-header">
-    <h2>Pending Requests</h2>
+    <h2>Completed Shifts</h2>
   </div>
 
   <div class="shift-list panel-scroll">
-    {% for req in pending_requests %}
-      <div class="shift-item applicant-card">
-        <div class="applicant-info">
-          <strong>{{ req.staff.full_name }}</strong>
-          <p>{{ req.shift }}</p>
-
-          <div class="rank-pill">
-            <span>DiscoRank</span>
-            <strong>{{ req.staff.disco_rank }}</strong>
-            <em>{{ req.staff.disco_tier }}</em>
-
-          </div>
-                      <div style="display:flex; flex-wrap:wrap; gap:8px; margin:8px 0;">
-  {% for skill in req.staff.skills.all %}
-    <span style="
-      display:inline-flex;
-      background:#e0f7ff;
-      color:#075985;
-      border:1px solid #bae6fd;
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      font-weight:800;
-      line-height:1;
-      white-space:nowrap;
-    ">
-      {{ skill.name }}
-    </span>
-  {% empty %}
-    <span style="color:#64748b;">No skills added</span>
-  {% endfor %}
-</div>
+    {% for shift in completed_shifts %}
+      <div class="shift-item">
+        <div>
+          <strong>{{ shift }}</strong>
+          <p>Completed and counted toward worker DiscoRank.</p>
         </div>
 
-        <form
-          method="post"
-          action="{% url 'respond_to_request' req.id %}"
-          class="button-row"
-        >
-          {% csrf_token %}
-          <button name="action" value="accept" class="btn-accept">
-            Accept
-          </button>
-          <button name="action" value="decline" class="btn-decline">
-            Decline
-          </button>
-        </form>
+        <span class="badge accepted">Completed</span>
       </div>
     {% empty %}
-      <div class="empty-state">
-  <h3>No requests yet</h3>
-  <p>Applications from staff will appear here once shifts are posted.</p>
-</div>
+      <div class="empty-state">No completed shifts yet.</div>
     {% endfor %}
   </div>
 </div>
-      <div class="panel">
-        <div class="panel-header">
-          <h2>Completed Shifts</h2>
-        </div>
 
-        <div class="shift-list panel-scroll">
-          {% for shift in completed_shifts %}
-          <div class="shift-item">
-            <div>
-              <strong>{{ shift }}</strong>
-              <p>Completed and counted toward worker DiscoRank.</p>
-            </div>
+<div class="panel">
+  <div class="panel-header">
+    <h2>Trusted Roster</h2>
+  </div>
 
-            <span class="badge accepted">Completed</span>
+  <div class="shift-list panel-scroll">
+    {% for staff in trusted_staff %}
+      <div class="shift-item applicant-card">
+
+        <div class="applicant-info">
+          <strong>{{ staff.full_name }}</strong>
+
+          <p>
+            {{ staff.get_primary_role_display }}
+          </p>
+
+          <div class="rank-pill">
+            <span>DiscoRank</span>
+            <strong>{{ staff.disco_rank }}</strong>
+            <em>{{ staff.disco_tier }}</em>
           </div>
-          {% empty %}
-          <div class="empty-state">No completed shifts yet.</div>
-          {% endfor %}
         </div>
+
+        <div class="button-row">
+
+          <a
+            href="{% url 'staff_profile' staff.id %}"
+            class="btn-small"
+          >
+            View Profile
+          </a>
+
+          <form
+            method="post"
+            action="{% url 'unfavourite_staff' staff.id %}"
+          >
+            {% csrf_token %}
+            <button type="submit" class="btn-decline">
+              Remove
+            </button>
+          </form>
+
+        </div>
+
       </div>
-    </div>
+    {% empty %}
+      <div class="empty-state">
+        <h3>No trusted staff yet</h3>
+        <p>
+          Save reliable workers to quickly rehire them in future.
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+</div>    </div>
   </div>
 </section>
 

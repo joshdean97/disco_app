@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from datetime import datetime, timedelta
 from .models import Site, Shift, ShiftRequest
-from authentication.models import Staff, Operator
+from authentication.models import Staff, Operator, FavouriteStaff
 from .forms import ShiftForm, SiteForm
 from django.contrib import messages
 from .helpers import shift_times_overlap, calculate_reliability
@@ -211,6 +211,8 @@ def operator_dashboard(request):
         (sum(profile_steps.values()) / len(profile_steps)) * 100
     )
 
+    trusted_staff = Staff.objects.filter(favourited_by__operator=operator).distinct()
+
     context = {
         "operator": operator,
         "sites": sites,
@@ -223,6 +225,7 @@ def operator_dashboard(request):
         "confirmed_shift_data": confirmed_shift_data,
         "profile_steps": profile_steps,
         "completion_percentage": completion_percentage,
+        "trusted_staff": trusted_staff,
     }
 
     return render(request, "disco_app/operator_dashboard.html", context)
@@ -273,10 +276,15 @@ def manage_shift_requests(request, shift_id):
     shift = get_object_or_404(Shift, id=shift_id, site__in=operator.sites.all())
     requests = shift.applications.filter(status="pending").select_related("staff")
 
+    favourite_staff_ids = FavouriteStaff.objects.filter(operator=operator).values_list(
+        "staff_id", flat=True
+    )
+
     context = {
         "shift": shift,
         "requests": requests,
         "operator": operator,
+        "favourite_staff_ids": favourite_staff_ids,
     }
 
     return render(request, "disco_app/manage_shift_requests.html", context)
@@ -700,3 +708,29 @@ def cancel_shift_booking(request, shift_id):
     messages.success(request, "Booking cancelled. Shift is now open again.")
 
     return redirect("operator_dashboard")
+
+
+@login_required
+def favourite_staff(request, staff_id):
+    operator = get_object_or_404(Operator, user=request.user)
+    staff = get_object_or_404(Staff, id=staff_id)
+
+    FavouriteStaff.objects.get_or_create(operator=operator, staff=staff)
+
+    messages.success(
+        request, f"{staff.full_name} has been added to your trusted roster."
+    )
+    return redirect(request.META.get("HTTP_REFERER", "operator_dashboard"))
+
+
+@login_required
+def unfavourite_staff(request, staff_id):
+    operator = get_object_or_404(Operator, user=request.user)
+    staff = get_object_or_404(Staff, id=staff_id)
+
+    FavouriteStaff.objects.filter(operator=operator, staff=staff).delete()
+
+    messages.success(
+        request, f"{staff.full_name} has been removed from your trusted roster."
+    )
+    return redirect(request.META.get("HTTP_REFERER", "operator_dashboard"))

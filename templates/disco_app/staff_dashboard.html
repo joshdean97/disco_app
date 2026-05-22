@@ -88,27 +88,33 @@
   </div>
 </div>
 {% endif %}
-    <div class="stats-grid">
-      <div class="stat-card disco-rank-card">
-        <span class="stat-label">DiscoRank</span>
-        <strong>{{ staff.disco_rank }}</strong>
-        <p>{{ staff.disco_tier }} Tier</p>
-      </div>
+<div class="stats-grid">
 
-<div class="stat-card">
-  <span class="stat-label">Invites</span>
-  <strong>{{ pending_invites|length }}</strong>
-</div>
+  <div class="stat-card">
+    <span class="stat-label">Pending</span>
+    <strong>{{ pending_count }}</strong>
+    <p>Awaiting venue response</p>
+  </div>
 
-<div class="stat-card">
-  <span class="stat-label">Applications</span>
-  <strong>{{ pending_applications|length }}</strong>
+  <div class="stat-card">
+    <span class="stat-label">Accepted</span>
+    <strong>{{ accepted_count }}</strong>
+    <p>Upcoming confirmed shifts</p>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-label">Completed</span>
+    <strong>{{ completed_requests|length }}</strong>
+    <p>Completed through Disco</p>
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-label">Estimated Earnings</span>
+    <strong>£{{ estimated_earnings }}</strong>
+    <p>From completed shifts</p>
+  </div>
+
 </div>
-      <div class="stat-card">
-        <span class="stat-label">Accepted</span>
-        <strong>{{ accepted_count }}</strong>
-      </div>
-    </div>
 
     <div class="dashboard-grid">
 

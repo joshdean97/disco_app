@@ -92,4 +92,14 @@ urlpatterns = [
         TemplateView.as_view(template_name="legal/operator_terms.html"),
         name="operator_terms",
     ),
+    path(
+        "operator/staff/<int:staff_id>/favourite/",
+        disco_views.favourite_staff,
+        name="favourite_staff",
+    ),
+    path(
+        "operator/staff/<int:staff_id>/unfavourite/",
+        disco_views.unfavourite_staff,
+        name="unfavourite_staff",
+    ),
 ]
