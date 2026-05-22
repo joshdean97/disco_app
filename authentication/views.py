@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -39,6 +41,9 @@ def register(request):
                     ),
                 )
 
+                messages.success(
+                    request, "Account created successfully. You can now log in."
+                )
                 return redirect("login")
 
         elif user_type == "operator":
@@ -54,7 +59,9 @@ def register(request):
                     user=user,
                     company_name=operator_form.cleaned_data.get("company_name"),
                 )
-
+                messages.success(
+                    request, "Account created successfully. You can now log in."
+                )
                 return redirect("login")
 
     return render(
@@ -110,7 +117,6 @@ def delete_availability(request, availability_id):
 
 
 def login(request):
-    error_message = None
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
@@ -129,17 +135,16 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 print("Login successful")
+                messages.success(request, f"Welcome back, {user.first_name}!")
                 return redirect("home")
             else:
-                error_message = "Invalid email or password."
+                messages.error(request, "Invalid email or password.")
                 print("Authentication failed - password incorrect")
         except User.DoesNotExist:
-            error_message = "Invalid email or password."
+            messages.error(request, "Invalid email or password.")
             print(f"User not found: {email}")
 
-    return render(
-        request, "authentication/login.html", {"error_message": error_message}
-    )
+    return render(request, "authentication/login.html")
 
 
 def logout(request):

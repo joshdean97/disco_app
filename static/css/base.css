@@ -205,3 +205,45 @@ main {
   }
 }
 
+.flash-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.flash-message {
+    padding: 14px 18px;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    min-width: 260px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    animation: slideIn 0.25s ease;
+}
+
+.flash-message.success {
+    background: #10b981;
+}
+
+.flash-message.error {
+    background: #ef4444;
+}
+
+.flash-message.warning {
+    background: #f59e0b;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
