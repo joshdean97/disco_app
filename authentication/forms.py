@@ -17,6 +17,7 @@ class StaffRegistrationForm(UserCreationForm):
     travel_radius_miles = forms.IntegerField(
         required=False, label="Travel Radius (miles)"
     )
+    website = forms.CharField(required=False, widget=forms.HiddenInput)
 
     class Meta:
         model = User
@@ -33,11 +34,18 @@ class StaffRegistrationForm(UserCreationForm):
             "travel_radius_miles",
         ]
 
+    def clean_website(self):
+        website = self.cleaned_data.get("website")
+        if website:
+            raise forms.ValidationError("Invalid field.")
+        return website
+
 
 class OperatorRegistrationForm(UserCreationForm):
     company_name = forms.CharField(required=False, label="Company Name")
     first_name = forms.CharField(required=True, label="First Name")
     last_name = forms.CharField(required=True, label="Last Name")
+    website = forms.CharField(required=False, widget=forms.HiddenInput)
 
     class Meta:
         model = User
@@ -50,6 +58,12 @@ class OperatorRegistrationForm(UserCreationForm):
             "last_name",
             "company_name",
         ]
+
+    def clean_website(self):
+        website = self.cleaned_data.get("website")
+        if website:
+            raise forms.ValidationError("Invalid field.")
+        return website
 
 
 class AvailabilityForm(forms.ModelForm):

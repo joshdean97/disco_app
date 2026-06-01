@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 
 class Site(models.Model):
@@ -78,6 +80,12 @@ class Shift(models.Model):
 
     class Meta:
         ordering = ["-date", "-start_time"]
+
+    def clean(self):
+        if self.date < timezone.localdate():
+            raise ValidationError("Shift date cannot be in the past.")
+        if self.end_time <= self.start_time:
+            raise ValidationError("End time must be after start time.")
 
     def __str__(self):
         formatted_date = self.date.strftime("%A %d %B").replace(" 0", " ")
