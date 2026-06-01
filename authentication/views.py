@@ -12,6 +12,7 @@ from .forms import (
     StaffSkillsForm,
 )
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from ..disco_app.emails import send_welcome_email
 
 
 def register(request):
@@ -40,6 +41,12 @@ def register(request):
                         "travel_radius_miles"
                     ),
                 )
+
+                send_welcome_email(user)
+
+messages.success(
+    request, "Account created successfully. You can now log in."
+)
 
                 messages.success(
                     request, "Account created successfully. You can now log in."

@@ -90,6 +90,9 @@ DATABASES = {
     )
 }
 
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Disco <hello@discoapp.co.uk>")
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
