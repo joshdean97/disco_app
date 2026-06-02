@@ -31,6 +31,7 @@ class Staff(models.Model):
     positive_reviews = models.PositiveIntegerField(default=0)
 
     skills = models.ManyToManyField("disco_app.Skill", blank=True)
+    wants_shift_emails = models.BooleanField(default=True)
 
     @property
     def disco_tier(self):

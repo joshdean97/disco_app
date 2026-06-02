@@ -17,6 +17,9 @@ class StaffRegistrationForm(UserCreationForm):
     travel_radius_miles = forms.IntegerField(
         required=False, label="Travel Radius (miles)"
     )
+    wants_shift_emails = forms.BooleanField(
+        required=False, initial=True, label="Email when recommended shifts are posted"
+    )
     website = forms.CharField(required=False, widget=forms.HiddenInput)
 
     class Meta:
@@ -32,6 +35,7 @@ class StaffRegistrationForm(UserCreationForm):
             "year_started",
             "bio",
             "travel_radius_miles",
+            "wants_shift_emails",
         ]
 
     def clean_website(self):

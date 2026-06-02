@@ -9,6 +9,8 @@ from django.contrib import messages
 from .helpers import shift_times_overlap, calculate_reliability
 from geopy.distance import geodesic
 from django.utils import timezone
+from disco_app.emails.shift_recommend import send_shift_recommendation_email
+from disco_app.services.shift_matching import get_recommended_staff_for_shift
 
 
 @login_required
@@ -283,7 +285,25 @@ def post_shift(request):
             shift = form.save(commit=False)
             shift.site = form.cleaned_data["site"]
             shift.save()
-            messages.success(request, "Shift posted successfully.")
+
+            recommended_staff = get_recommended_staff_for_shift(shift)
+            emails_sent = 0
+
+            for staff in recommended_staff:
+                try:
+                    send_shift_recommendation_email(staff, shift)
+                    emails_sent += 1
+                except Exception as e:
+                    print(
+                        f"Failed to send recommended shift email "
+                        f"to {staff.user.email}: {e}"
+                    )
+
+            messages.success(
+                request,
+                f"Shift posted successfully. {emails_sent} recommended workers emailed.",
+            )
+
             return redirect("find_staff_for_shift", shift_id=shift.id)
     else:
         form = ShiftForm()
